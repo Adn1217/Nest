@@ -1,28 +1,25 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { StudentsService } from './students.service';
 
 @Controller('students')
 export class StudentsController {
 
-  private students = ['A', 'B', 'C'];
+
+  constructor( private readonly studentsService: StudentsService){
+
+  }
 
   @Get()
   getStudents() {
-    return this.students
+    const students = this.studentsService.findAll();
+    return students
   }
 
   @Get(':id')
   getStudentById(@Param('id') id: string){
-    const student = {
-      id : id,
-      student : this.students[+id]
-    }
-    // console.log(student);
-    if(!student.student){
-      student.student = 'No encontrado' 
-    }
+
+    const student = this.studentsService.findById(+id);
     
-    return {
-      student
-    }
+    return student 
   }
 }
