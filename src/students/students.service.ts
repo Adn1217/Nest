@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { newUser, users } from './models/students.interface';
+import { users } from './models/students.interface';
 import { v4 as uuid } from 'uuid';
 import { CreateStudentDto, UpdateStudentDto } from './dtos';
 

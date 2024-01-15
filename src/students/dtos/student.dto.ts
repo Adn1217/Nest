@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsString, MinLength } from "class-validator";
+import { IsEmail, IsString, MinLength } from "class-validator";
 
 export type userRol = 'user' | 'admin' | null
 
