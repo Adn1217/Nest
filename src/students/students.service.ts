@@ -1,24 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-export type userRol = 'user' | 'admin' | null
+import { newUser, users } from './models/students.interface';
+import { v4 as uuid } from 'uuid';
+import { CreateStudentDto, UpdateStudentDto } from './dtos';
 
-export interface newUser {
-    nombres: string;
-    apellidos: string;
-    usuario: string;
-    edad: number;
-    correo: string;
-    password: string;
-    role: userRol
-  }
-export interface users extends newUser {
-    id: number;
-  }
 @Injectable()
 export class StudentsService {
 
     private students : users [] = [
           {
-            "id": 1,
+            "id": uuid(),
             "nombres": "Adrian Alberto",
             "apellidos": "Fernández Cabrera",
             "usuario": "adn1217",
@@ -28,7 +18,7 @@ export class StudentsService {
             "role": "admin"
           },
           {
-            "id": 2,
+            "id": uuid(),
             "nombres": "Alejandra Paola",
             "apellidos": "Fernández Castro",
             "usuario": "alu2110",
@@ -38,7 +28,7 @@ export class StudentsService {
             "role": "user"
           },
           {
-            "id": 3,
+            "id": uuid(),
             "nombres": "Rupertico Adolfo",
             "apellidos": "Herrera Gonzalez",
             "usuario": "ruper12",
@@ -48,7 +38,7 @@ export class StudentsService {
             "role": "user"
           },
           {
-            "id": 1693702085020,
+            "id": uuid(),
             "nombres": "Keyner Antonio",
             "apellidos": "Fuentes Fontalvo",
             "usuario": "adn1217",
@@ -58,7 +48,7 @@ export class StudentsService {
             "role": "user"
           },
           {
-            "id": 1693794786589,
+            "id": uuid(),
             "nombres": "Adrian Alberto",
             "apellidos": "Fernández Castro",
             "usuario": "adn1217",
@@ -68,7 +58,7 @@ export class StudentsService {
             "role": "user"
           },
           {
-            "id": 1700950786402,
+            "id": uuid(),
             "nombres": "Esmeregildo",
             "apellidos": "Segrera fuentes",
             "usuario": "esmese",
@@ -80,15 +70,42 @@ export class StudentsService {
         ]
 
 
-  findAll(){
+  findAll(): users[] {
     return this.students;
   }
 
-  findById(id: number): users | undefined{
+  findById(id: string): users | undefined {
     const student = this.students.find((student) => student.id === id);
     if(!student){
         throw new NotFoundException(`Usuario con id: ${id} no encontrado.`);
     }
     return student
+  }
+
+  createStudent(createStudentDto: CreateStudentDto): users {
+    const { nombres, apellidos, usuario, edad, correo, password, role } = createStudentDto;
+    const newStudent: users = { 
+        id : uuid(), 
+        nombres,
+        apellidos,
+        usuario,
+        edad: +edad, 
+        correo,
+        password,
+        role
+    };
+    this.students.push(newStudent);
+    return newStudent;
+  }
+
+  updateStudent(id: string, updateStudentDto: UpdateStudentDto): users{
+    const savedStudent = this.findById(id);
+    const updatedStudent: users = {...savedStudent, ...updateStudentDto, edad: +updateStudentDto.edad}
+    if(!updatedStudent.edad){
+        updatedStudent.edad = savedStudent.edad
+    }
+    const index = this.students.findIndex((student) => student.id = id);
+    this.students.splice(index,1, updatedStudent)
+    return updatedStudent;
   }
 }

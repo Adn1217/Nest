@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
-import { StudentsService, newUser } from './students.service';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { StudentsService } from './students.service';
+import { users } from './models/students.interface';
+import { CreateStudentDto, UpdateStudentDto } from './dtos';
 
 @Controller('students')
 export class StudentsController {
@@ -9,25 +11,28 @@ export class StudentsController {
   }
 
   @Get()
-  getStudents() {
+  getStudents() : users[]{
     const students = this.studentsService.findAll();
     return students
   }
 
   @Get('/:id')
-  getStudentById(@Param('id', ParseIntPipe) id: number){
-    const student = this.studentsService.findById(+id);
+  getStudentById(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string): users{
+  const student = this.studentsService.findById(id);
     return student 
   }
 
   @Post()
-  createStudent(@Body() body: newUser){
-    return body
+  // @UsePipes(ValidationPipe) // Se implementa globalmente en la app.
+  createStudent(@Body() studentDto: CreateStudentDto): users{
+    const newUser = this.studentsService.createStudent(studentDto);
+    return newUser
   }
   
   @Patch('/:id')
-  updateStudent(@Param('id', ParseIntPipe) id: number, @Body() body: newUser){
-    return body
+  updateStudent(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string, @Body() studentDto: UpdateStudentDto ): users{
+    const updatedStudent = this.studentsService.updateStudent(id, studentDto);
+    return updatedStudent
   }
 
   @Delete('/:id')
