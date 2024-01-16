@@ -7,63 +7,7 @@ import { Course } from './models/courses.model';
 @Injectable()
 export class CoursesService {
 
-  private courses: Course[] = [
-    // {
-    //   "id": uuid() ,
-    //   "curso": "Cálculo I",
-    //   "creditos": 3
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Cálculo II",
-    //   "creditos": 3
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Cálculo III",
-    //   "creditos": 3
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Ecuaciones Diferenciales",
-    //   "creditos": 2
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Física Moderna",
-    //   "creditos": 2
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Física Calor-Ondas",
-    //   "creditos": 3
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Fisica Electricidad",
-    //   "creditos": 3
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Física Mecanica",
-    //   "creditos": 3
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Dinámica",
-    //   "creditos": 4
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Comunicaciones",
-    //   "creditos": 3
-    // },
-    // {
-    //   "id": uuid(),
-    //   "curso": "Ética",
-    //   "creditos": 2
-    // }
-  ]
+  private courses: Course[] = []
 
   create(createCourseDto: CreateCourseDto) {
     const newCourse = {
