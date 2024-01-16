@@ -8,61 +8,61 @@ import { Course } from './models/courses.model';
 export class CoursesService {
 
   private courses: Course[] = [
-    {
-      "id": uuid() ,
-      "curso": "Cálculo I",
-      "creditos": 3
-    },
-    {
-      "id": uuid(),
-      "curso": "Cálculo II",
-      "creditos": 3
-    },
-    {
-      "id": uuid(),
-      "curso": "Cálculo III",
-      "creditos": 3
-    },
-    {
-      "id": uuid(),
-      "curso": "Ecuaciones Diferenciales",
-      "creditos": 2
-    },
-    {
-      "id": uuid(),
-      "curso": "Física Moderna",
-      "creditos": 2
-    },
-    {
-      "id": uuid(),
-      "curso": "Física Calor-Ondas",
-      "creditos": 3
-    },
-    {
-      "id": uuid(),
-      "curso": "Fisica Electricidad",
-      "creditos": 3
-    },
-    {
-      "id": uuid(),
-      "curso": "Física Mecanica",
-      "creditos": 3
-    },
-    {
-      "id": uuid(),
-      "curso": "Dinámica",
-      "creditos": 4
-    },
-    {
-      "id": uuid(),
-      "curso": "Comunicaciones",
-      "creditos": 3
-    },
-    {
-      "id": uuid(),
-      "curso": "Ética",
-      "creditos": 2
-    }
+    // {
+    //   "id": uuid() ,
+    //   "curso": "Cálculo I",
+    //   "creditos": 3
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Cálculo II",
+    //   "creditos": 3
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Cálculo III",
+    //   "creditos": 3
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Ecuaciones Diferenciales",
+    //   "creditos": 2
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Física Moderna",
+    //   "creditos": 2
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Física Calor-Ondas",
+    //   "creditos": 3
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Fisica Electricidad",
+    //   "creditos": 3
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Física Mecanica",
+    //   "creditos": 3
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Dinámica",
+    //   "creditos": 4
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Comunicaciones",
+    //   "creditos": 3
+    // },
+    // {
+    //   "id": uuid(),
+    //   "curso": "Ética",
+    //   "creditos": 2
+    // }
   ]
 
   create(createCourseDto: CreateCourseDto) {
@@ -99,5 +99,9 @@ export class CoursesService {
     const index = this.courses.findIndex((course) => course.id === id);
     this.courses.splice(index, 1);
     return course
+  }
+
+  fillCoursesWithSEED( COURSES_SEED: Course[]){
+    this.courses = COURSES_SEED;
   }
 }

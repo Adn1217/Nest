@@ -1,6 +1,6 @@
 export class Course {
 
-    id: number;
+    id: string;
     curso: string;
     creditos: number;
 }
