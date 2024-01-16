@@ -3,7 +3,7 @@ import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Course } from './models/courses.model';
-import { Response as Res } from 'express';
+// import { Response as Res } from 'express';
 
 @Controller('courses')
 export class CoursesController {
