@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { users } from './models/students.interface';
 import { CreateStudentDto, UpdateStudentDto } from './dtos';
@@ -31,6 +31,12 @@ export class StudentsController {
   
   @Patch('/:id')
   updateStudent(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string, @Body() studentDto: UpdateStudentDto ): users{
+    if (Object.keys(studentDto).length === 0){
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: `No se encuentra información en el payload`,
+      }, HttpStatus.BAD_REQUEST)
+    }
     const updatedStudent = this.studentsService.updateStudent(id, studentDto);
     return updatedStudent
   }
