@@ -108,4 +108,11 @@ export class StudentsService {
     this.students.splice(index,1, updatedStudent)
     return updatedStudent;
   }
+
+  deleteStudent(id: string): users {
+    const savedStudent = this.findById(id);
+    const index = this.students.findIndex((student) => student.id = id);
+    this.students.splice(index,1)
+    return savedStudent
+  }
 }

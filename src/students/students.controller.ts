@@ -36,9 +36,8 @@ export class StudentsController {
   }
 
   @Delete('/:id')
-  deleteStudent(@Param('id', ParseIntPipe) id: number){
-    return {
-      message: `Eliminado exitoso del usuario ${id}`
-    }
+  deleteStudent(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string) : users{
+    const deletedStudent = this.studentsService.deleteStudent(id);
+    return deletedStudent;
   }
 }
