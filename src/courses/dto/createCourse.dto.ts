@@ -6,8 +6,8 @@ export class CreateCourseDto {
     @IsNotEmpty()
     curso: string;
 
-    @IsString({message: 'Atributos deben contener "creditos"'})
-    // @IsNumber()
+    // @IsString({message: 'Atributos deben contener "creditos"'})
+    @IsNumber()
     @IsNotEmpty()
     creditos: number; 
 }

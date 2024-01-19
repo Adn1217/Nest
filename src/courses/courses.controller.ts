@@ -59,7 +59,7 @@ export class CoursesController {
   }
 
   @Delete(':id')
-  remove(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string): Course {
-    return this.coursesService.remove(id);
+  delete(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string): Course {
+    return this.coursesService.delete(id);
   }
 }

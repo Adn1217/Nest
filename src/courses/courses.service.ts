@@ -38,7 +38,7 @@ export class CoursesService {
     return updatedCourse
   }
 
-  remove(id: string) {
+  delete(id: string) {
     const course = this.findOne(id);
     const index = this.courses.findIndex((course) => course.id === id);
     this.courses.splice(index, 1);

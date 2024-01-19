@@ -1,5 +1,9 @@
 
-export type userRol = 'user' | 'admin' | null
+export type userRol = 'user' | 'admin'
+export enum userRoles {
+  user = 'user',
+  admin = 'admin'
+}
 
 export interface newUser {
     nombres: string;

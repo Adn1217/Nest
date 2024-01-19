@@ -10,7 +10,7 @@ export const STUDENTS_SEED : users [] = [
     edad: 32,
     correo: "adn1217@hotmail.com",
     password: "12345678",
-    role: "admin"
+    role: "admin" as const,
     },
     {
     id: "13a607e0-c04d-4353-8f51-10edbfe9e01e",
@@ -20,7 +20,7 @@ export const STUDENTS_SEED : users [] = [
     edad: 31,
     correo: "alufndz_@gmail.com",
     password: "12345678",
-    role: "user"
+    role: "user" as const
     },
     {
     id: "204ec386-83a6-482d-89db-dea2d41d2dd0",
@@ -30,7 +30,7 @@ export const STUDENTS_SEED : users [] = [
     edad: 33,
     correo: "raherreraG@gmail.com",
     password: "12345678",
-    role: "user"
+    role: "user" as const,
     },
     {
     id: "5997e7d5-e637-48be-9026-3ed88491d6a8",
@@ -40,7 +40,7 @@ export const STUDENTS_SEED : users [] = [
     edad: 22,
     correo: "adn1217@hotmail.com",
     password: "11111111",
-    role: "user"
+    role: "user" as const,
     },
     {
     id: "1427c086-7549-43ae-bb04-bf92b59029c2",
@@ -50,7 +50,7 @@ export const STUDENTS_SEED : users [] = [
     edad: 23,
     correo: "adn1219@hotmail.com",
     password: "11111111",
-    role: "user"
+    role: "user" as const,
     },
     {
     id: "a3d87b90-49e3-4e1c-bf2f-569183df8749",
@@ -60,6 +60,6 @@ export const STUDENTS_SEED : users [] = [
     edad: 67,
     correo: "esme.segrera@hotmail.com",
     password: "12345678",
-    role: "user"
+    role: "user" as const,
     }
 ]

@@ -1,8 +1,7 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsString, MinLength } from "class-validator";
+import { userRol, userRoles } from "../models/students.interface";
 
-export type userRol = 'user' | 'admin' | null
-
-const minChar: number = 8;
+const MINCHAR: number = 8;
 
 export class CreateStudentDto {
     @IsString({message: 'Atributos deben contener "nombres"'})
@@ -23,10 +22,11 @@ export class CreateStudentDto {
     public readonly correo: string;
 
     @IsString({message: 'Atributos deben contener "password"'})
-    @MinLength(minChar, {message: `"password" debe ser mayor o igual a ${minChar} caracteres`})
+    @MinLength(MINCHAR, {message: `"password" debe ser mayor o igual a ${MINCHAR} caracteres`})
     public readonly password: string;
 
     @IsString({message: 'Atributos deben contener "role"'})
+    @IsEnum(userRoles)
     public readonly role: userRol
 
     public getAttributes(){
