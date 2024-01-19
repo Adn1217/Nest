@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString, Matches, MinLength, matches } from "class-validator";
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString, MinLength } from "class-validator";
 import { userRol, userRoles } from "src/students/models/students.interface"
 
 const MinChar: number = 8;
