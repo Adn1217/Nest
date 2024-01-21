@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Header } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Put } from '@nestjs/common';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/createTeacher.dto';
 import { UpdateTeacherDto } from './dto/updateTeacher.dto';
@@ -20,7 +20,6 @@ export class TeachersController {
   }
 
   @Get()
-  @Header("Access-Control-Allow-Origin", "*") // Avoid CORS Policy.
   findAll() {
     const courses = this.teachersService.findAll();
     return courses;
@@ -32,7 +31,7 @@ export class TeachersController {
     return course;
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id', new ParseUUIDPipe({version: '4'})) id: string, @Body() updateTeacherDto: UpdateTeacherDto) {
     if (Object.keys(updateTeacherDto).length === 0){
       throw new HttpException({

@@ -21,6 +21,14 @@ export class StudentsService {
     return student
   }
 
+  findByEmail(email: string): users[] | undefined {
+    const student = this.students.find((student) => student.correo === email);
+    if(!student){
+        throw new NotFoundException(`Usuario con correo: ${email} no encontrado.`);
+    }
+    return [student]
+  }
+
   createStudent(createStudentDto: CreateStudentDto): users {
     const { nombres, apellidos, usuario, edad, correo, password, role } = createStudentDto;
     const newStudent: users = { 
@@ -39,18 +47,20 @@ export class StudentsService {
 
   updateStudent(id: string, updateStudentDto: UpdateStudentDto): users{
     const savedStudent = this.findById(id);
+    // console.log('SavedStudent: ', savedStudent);
     const updatedStudent: users = {...savedStudent, ...updateStudentDto, edad: +updateStudentDto.edad}
-    if(!updatedStudent.edad){
-        updatedStudent.edad = savedStudent.edad
+    if(!updatedStudent.edad){ //TODO: Verify necesity of this if.
+        updatedStudent.edad = savedStudent.edad;
     }
-    const index = this.students.findIndex((student) => student.id = id);
-    this.students.splice(index,1, updatedStudent)
+    const index = this.students.findIndex((student) => student.id === id);
+    console.log('Index: ', index);
+    this.students.splice(index,1, updatedStudent);
     return updatedStudent;
   }
 
   deleteStudent(id: string): users {
     const savedStudent = this.findById(id);
-    const index = this.students.findIndex((student) => student.id = id);
+    const index = this.students.findIndex((student) => student.id === id);
     this.students.splice(index,1)
     return savedStudent
   }

@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNumber, IsString, MinLength } from "class-validator";
 import { userRol, userRoles } from "../models/students.interface";
 
 const MINCHAR: number = 8;
@@ -13,9 +13,9 @@ export class CreateStudentDto {
     @IsString({message: 'Atributos deben contener "usuario"'})
     public readonly usuario: string;
 
-    @IsString({message: 'Atributos deben contener "edad"'})
-    // @IsNumber({maxDecimalPlaces: 0})
-    public readonly edad: string;
+    // @IsString({message: 'Atributos deben contener "edad"'})
+    @IsNumber()
+    public readonly edad: number;
 
     @IsString({message: 'Atributos deben contener "correo"'})
     @IsEmail()

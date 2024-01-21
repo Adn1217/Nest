@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Response, Header } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Header, Put } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
@@ -40,7 +40,7 @@ export class CoursesController {
     return course;
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string, @Body() updateCourseDto: UpdateCourseDto) : Course {
     if (Object.keys(updateCourseDto).length === 0){
       throw new HttpException({

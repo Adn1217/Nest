@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
-import { Enrollment } from './models/enrollments.interface';
+import { Enrollment, enrollmentExpanded } from './models/enrollments.interface';
 import { v4 as uuid } from 'uuid';
 import { CoursesService } from 'src/courses/courses.service';
 import { StudentsService } from 'src/students/students.service';
@@ -48,6 +48,20 @@ export class EnrollmentsService {
   findAll(): Enrollment [] {
     const enrollments = this.enrollments;
     return enrollments;
+  }
+
+  findAllWithUserAndCourse(): enrollmentExpanded [] {
+    const enrollments = this.findAll();
+    const courses = this.coursesService.findAll();
+    const students = this.studentsService.findAll();
+    const enrollmentExpanded = enrollments.map((enrollment) => {
+      const enrollmentExp = {...enrollment, 
+        course: courses.find((course) => course.id === enrollment.courseId), 
+        user: students.find((student) => student.id === enrollment.userId)};
+      return enrollmentExp;
+    })
+    console.log('EnrollmentExpanded: ', enrollmentExpanded);
+    return enrollmentExpanded;
   }
 
   findOne(id: string) {

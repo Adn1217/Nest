@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Query, ParseBoolPipe, Put } from '@nestjs/common';
 import { EnrollmentsService } from './enrollments.service';
 import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
+import { Enrollment, enrollmentExpanded } from './models/enrollments.interface';
 
 @Controller('enrollments')
 export class EnrollmentsController {
@@ -14,9 +15,14 @@ export class EnrollmentsController {
   }
 
   @Get()
-  findAll() {
-    const enrollments = this.enrollmentsService.findAll();
-    return enrollments
+  findAll(@Query('_expand', new ParseBoolPipe()) expanded: boolean): Enrollment [] | enrollmentExpanded [] {
+    if(expanded){
+      const enrollmentsExpanded = this.enrollmentsService.findAllWithUserAndCourse();
+      return enrollmentsExpanded;
+    }else{
+      const enrollments = this.enrollmentsService.findAll();
+      return enrollments
+    }
   }
 
   @Get(':id')
@@ -25,7 +31,7 @@ export class EnrollmentsController {
     return enrollment;
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id', new ParseUUIDPipe({version: '4'})) id: string, @Body() updateEnrollmentDto: UpdateEnrollmentDto) {
     if (Object.keys(updateEnrollmentDto).length === 0){
       throw new HttpException({
