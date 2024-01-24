@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { users } from './models/students.interface';
 import { CreateStudentDto, UpdateStudentDto } from './dtos';
 
-@Controller('students')
+@Controller('users')
 export class StudentsController {
 
   constructor( private readonly studentsService: StudentsService){
@@ -11,9 +11,14 @@ export class StudentsController {
   }
 
   @Get()
-  getStudents() : users[]{
-    const students = this.studentsService.findAll();
-    return students
+  getStudents(@Query('correo') correo: string) : users[] | users{
+    if(correo){
+      const student = this.studentsService.findByEmail(correo);
+      return student;
+    }else{
+      const students = this.studentsService.findAll();
+      return students;
+    }
   }
 
   @Get('/:id')
@@ -29,7 +34,7 @@ export class StudentsController {
     return newUser
   }
   
-  @Patch('/:id')
+  @Put('/:id')
   updateStudent(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string, @Body() studentDto: UpdateStudentDto ): users{
     if (Object.keys(studentDto).length === 0){
       throw new HttpException({

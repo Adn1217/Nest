@@ -1,6 +1,17 @@
-export class Course {
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
-    id: string;
+@Schema()
+export class Course extends Document {
+
+    // id: string;
+    @Prop({
+        unique: true,
+        index: true,
+    })
     curso: string;
+
     creditos: number;
 }
+
+export const CourseSchema = SchemaFactory.createForClass(Course);
