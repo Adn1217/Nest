@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNumber, IsOptional, IsString, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsInt, IsNumber, IsOptional, IsPositive, IsString, MinLength } from "class-validator";
 import { userRoles } from "../models/students.interface";
 
 export type userRol = 'user' | 'admin' | null
@@ -19,7 +19,9 @@ export class UpdateStudentDto {
     public readonly usuario?: string;
 
     // @IsString({message: 'Atributos deben contener "edad"'})
-    @IsNumber()
+    // @IsNumber()
+    @IsInt({message: 'La edad debe ser un entero.'})
+    @IsPositive({message: 'La edad debe ser positiva.'})
     @IsOptional()
     // @IsNumber({maxDecimalPlaces: 0})
     public readonly edad?: number;

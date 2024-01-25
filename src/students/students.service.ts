@@ -53,7 +53,7 @@ export class StudentsService {
         updatedStudent.edad = savedStudent.edad;
     }
     const index = this.students.findIndex((student) => student.id === id);
-    console.log('Index: ', index);
+    // console.log('Index: ', index);
     this.students.splice(index,1, updatedStudent);
     return updatedStudent;
   }

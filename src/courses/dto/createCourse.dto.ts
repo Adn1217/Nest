@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsPositive, IsString, Max } from "class-validator";
 
 export class CreateCourseDto {
 
@@ -7,7 +7,10 @@ export class CreateCourseDto {
     curso: string;
 
     // @IsString({message: 'Atributos deben contener "creditos"'})
-    @IsNumber()
+    // @IsNumber()
+    @IsInt({message: 'El número de créditos debe ser entero'})
+    @IsPositive({message: 'El número de créditos debe ser positivo'})
+    @Max(21,{message: 'El número máximmo de créditos es 21'})
     @IsNotEmpty()
     creditos: number; 
 }

@@ -30,7 +30,9 @@ docker-compose up -d
 
 # Student platform
 
-Populate DB
+Populate DB.
+
+Get Requesto to:
 
 ```
 http://localhost:3500/seed
