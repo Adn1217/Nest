@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsNumber, IsPositive, IsString, Max } from "class-validator";
+import { IsInt, IsNotEmpty, IsPositive, IsString, Max } from "class-validator";
 
 export class CreateCourseDto {
 

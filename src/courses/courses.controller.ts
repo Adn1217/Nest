@@ -10,7 +10,7 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
-  create(@Body() createCourseDto: CreateCourseDto) : Course {
+  create(@Body() createCourseDto: CreateCourseDto): Promise<Course> {
     if (isNaN(+createCourseDto.creditos)){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,

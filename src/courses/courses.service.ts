@@ -1,21 +1,46 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { v4 as uuid } from 'uuid';
 import { Course } from './models/courses.model';
+import { Course as CourseEntity } from './entities/course.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class CoursesService {
+  constructor(
+    @InjectModel(CourseEntity.name) 
+    private readonly courseModel: Model<CourseEntity>){
+  }
 
   private courses: Course[] = []
 
-  create(createCourseDto: CreateCourseDto) {
-    const newCourse = {
-      id: uuid(), 
-      ...createCourseDto, 
-      creditos: +createCourseDto.creditos};
-    this.courses.push(newCourse);
-    return newCourse
+  async create(createCourseDto: CreateCourseDto) {
+    
+    // const newCourse = {
+    //   id: uuid(), 
+    //   ...createCourseDto, 
+    //   creditos: +createCourseDto.creditos};
+    // this.courses.push(newCourse);
+    try {
+      const newCourseMongo = await this.courseModel.create(createCourseDto);
+      // console.log('NewCourseMongo: ', newCourseMongo);
+      const {_id, creditos, curso, __v, ...rest} = newCourseMongo;
+      const newCourseMg = {id: _id.toString(), curso, creditos}
+      this.courses.push(newCourseMg);
+      // console.log('NewCourseMongo2: ', newCourseMg);
+      return newCourseMg;
+    }catch(error){
+      console.log('Se presenta error: ', error);
+      let errorMsg = error
+      if(error.code === 11000){
+        errorMsg = error.keyValue
+      }
+      throw new BadRequestException(
+        `Se ha presentado error al intentar guardar el curso ${createCourseDto.curso} - ${JSON.stringify(errorMsg)} duplicado.`
+      )
+    }
   }
 
   findAll() : Course[] {
