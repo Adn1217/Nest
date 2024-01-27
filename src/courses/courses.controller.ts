@@ -15,7 +15,7 @@ export class CoursesController {
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
         error: `El atributo 'credito' debe ser un número`,
-      }, HttpStatus.BAD_REQUEST)
+      }, HttpStatus.BAD_REQUEST);
     }
     const course = this.coursesService.create(createCourseDto);
     return course;
@@ -29,19 +29,19 @@ export class CoursesController {
   
   @Get()
   @Header("Access-Control-Allow-Origin", "*") // Avoid CORS Policy.
-  findAll(): Course[] {
+  findAll(): Promise<Course[]> {
     const courses = this.coursesService.findAll();
     return courses;
   } 
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string) : Course {
+  findOne(@Param('id') id: string) : Promise<Course> {
     const course = this.coursesService.findOne(id);
     return course;
   }
 
   @Put(':id')
-  update(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string, @Body() updateCourseDto: UpdateCourseDto) : Course {
+  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) : Promise<Course> {
     if (Object.keys(updateCourseDto).length === 0){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -59,7 +59,7 @@ export class CoursesController {
   }
 
   @Delete(':id')
-  delete(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string): Course {
+  delete(@Param('id') id: string): Promise<Course> {
     return this.coursesService.delete(id);
   }
 }

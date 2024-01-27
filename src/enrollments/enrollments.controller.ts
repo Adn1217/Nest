@@ -15,7 +15,7 @@ export class EnrollmentsController {
   }
 
   @Get()
-  findAll(@Query('_expand', new ParseBoolPipe()) expanded: boolean): Enrollment [] | enrollmentExpanded [] {
+  findAll(@Query('_expand', new ParseBoolPipe()) expanded: boolean): Promise<Enrollment [] | enrollmentExpanded []> | Enrollment [] {
     if(expanded){
       const enrollmentsExpanded = this.enrollmentsService.findAllWithUserAndCourse();
       return enrollmentsExpanded;

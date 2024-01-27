@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
-import { v4 as uuid } from 'uuid';
+// import { v4 as uuid } from 'uuid';
 import { Course } from './models/courses.model';
 import { Course as CourseEntity } from './entities/course.entity';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,7 +16,7 @@ export class CoursesService {
 
   private courses: Course[] = []
 
-  async create(createCourseDto: CreateCourseDto) {
+  async create(createCourseDto: CreateCourseDto): Promise<Course> {
     
     // const newCourse = {
     //   id: uuid(), 
@@ -26,9 +26,9 @@ export class CoursesService {
     try {
       const newCourseMongo = await this.courseModel.create(createCourseDto);
       // console.log('NewCourseMongo: ', newCourseMongo);
-      const {_id, creditos, curso, __v, ...rest} = newCourseMongo;
+      const {_id, creditos, curso } = newCourseMongo;
       const newCourseMg = {id: _id.toString(), curso, creditos}
-      this.courses.push(newCourseMg);
+      // this.courses.push(newCourseMg);
       // console.log('NewCourseMongo2: ', newCourseMg);
       return newCourseMg;
     }catch(error){
@@ -36,38 +36,108 @@ export class CoursesService {
       let errorMsg = error
       if(error.code === 11000){
         errorMsg = error.keyValue
+        throw new BadRequestException(
+          `Se ha presentado error al intentar guardar el curso ${createCourseDto.curso} - ${JSON.stringify(errorMsg)} duplicado.`
+        )
+      }else{
+        throw new HttpException({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Se ha presentado error al intentar guardar el curso ${createCourseDto.curso} - ${JSON.stringify(errorMsg)} duplicado.`
+        }, HttpStatus.INTERNAL_SERVER_ERROR, {
+          cause: error
+        })
       }
-      throw new BadRequestException(
-        `Se ha presentado error al intentar guardar el curso ${createCourseDto.curso} - ${JSON.stringify(errorMsg)} duplicado.`
-      )
     }
   }
 
-  findAll() : Course[] {
-    return this.courses
+  async findAll() : Promise<Course[]> {
+    const coursesMg = await this.courseModel.find();
+    const courses = coursesMg.map((courseMg) => {
+      const {_id, curso, creditos} = courseMg;
+      const course = {id: _id, curso, creditos};
+      return course
+    })
+
+    return courses
   }
 
-  findOne(id: string) {
-    const course = this.courses.find((course) => course.id === id);
-    if(!course){
-      throw new NotFoundException(`Curso con id: ${id} no encontrado.`)
+  async findOne(id: string) : Promise<Course> {
+    // const course = this.courses.find((course) => course.id === id);
+    try{
+      const course = await this.courseModel.findById(id);
+
+      if(!course){
+        // const courseLocal = this.courses.find((course) => course.id === id);
+        // if(!courseLocal){
+          throw new NotFoundException(`Curso con id: ${id} no encontrado.`);
+        // }else{
+        // return courseLocal;
+        // }
+      }else{
+        const {_id, curso, creditos} = course;
+        const courseMg = {id: _id, curso, creditos};
+        return courseMg;
+      }
+    }catch(error){
+      throw new InternalServerErrorException(`Se ha presentado error al intentar buscar el curso con id: ${id} - ${JSON.stringify(error.message)}}`);
     }
-    return course;
   }
 
-  update(id: string, updateCourseDto: UpdateCourseDto): Course {
-    const course = this.findOne(id);
-    const updatedCourse = {...course, ...updateCourseDto}
-    const index = this.courses.findIndex((course) => course.id === id);
-    this.courses.splice(index, 1, updatedCourse);
-    return updatedCourse
+  async update(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
+    try{
+      const course = await this.findOne(id);
+      
+      if(!course){
+        // const courseLocal = this.courses.find((course) => course.id === id);
+        // const updatedCourse = {...courseLocal, ...updateCourseDto}
+        // const index = this.courses.findIndex((course) => course.id === id);
+        // this.courses.splice(index, 1, updatedCourse);
+        // if(!courseLocal){
+          throw new NotFoundException(`Curso con id: ${id} no encontrado.`);
+        // }else{
+        //   return courseLocal;
+        // }
+      }else{
+        const updatedCourseAck = await this.courseModel.updateOne({_id: id},updateCourseDto);
+        if(updatedCourseAck.modifiedCount){
+          const updatedCourse = {...course, ...updateCourseDto};
+          console.log('Se ha actualizado el curso: ', updatedCourse);
+          return updatedCourse;
+        }else{
+          throw new Error('Curso no actualizado.')
+        }
+      }
+    }catch(error){
+      throw new InternalServerErrorException(`Se ha presentado error al intentar editar el curso con id: ${id} - ${JSON.stringify(error.error)}}`);
+    }
   }
 
-  delete(id: string) {
-    const course = this.findOne(id);
-    const index = this.courses.findIndex((course) => course.id === id);
-    this.courses.splice(index, 1);
-    return course
+  async delete(id: string): Promise<Course> {
+    try{
+      const course = await this.findOne(id);
+
+      if(!course){
+        // const courseLocal = this.courses.find((course) => course.id === id);
+        // if(!courseLocal){
+          throw new NotFoundException(`Curso con id: ${id} no encontrado.`);
+        // }else{
+          // const index = this.courses.findIndex((course) => course.id === id);
+          // this.courses.splice(index, 1);
+          // console.log('Se ha eliminado el curso: ', courseLocal);
+          // return courseLocal;
+        // }
+      }else{
+        const deletedAck = await this.courseModel.deleteOne({_id: id});
+        if(deletedAck.deletedCount){
+          console.log('Se ha borrado el curso: ', JSON.stringify(course));
+        }else{
+          throw new Error(`Curso no borrado.`)
+        }
+        return course
+      }
+    }catch(error){
+      throw new InternalServerErrorException(`Se ha presentado error al intentar eliminar el curso con id: ${id} - ${JSON.stringify(error.message)}}`);
+    }
   }
 
   fillCoursesWithSEED( COURSES_SEED: Course[]){

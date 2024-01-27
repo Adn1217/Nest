@@ -50,18 +50,23 @@ export class EnrollmentsService {
     return enrollments;
   }
 
-  findAllWithUserAndCourse(): enrollmentExpanded [] {
+  //TODO: Ajustar para que coincidan IDs de estudiantes con Mongo DB.
+  async findAllWithUserAndCourse(): Promise<enrollmentExpanded []> {
     const enrollments = this.findAll();
-    const courses = this.coursesService.findAll();
     const students = this.studentsService.findAll();
-    const enrollmentExpanded = enrollments.map((enrollment) => {
-      const enrollmentExp = {...enrollment, 
-        course: courses.find((course) => course.id === enrollment.courseId), 
-        user: students.find((student) => student.id === enrollment.userId)};
-      return enrollmentExp;
+    try{
+      const courses = await this.coursesService.findAll();
+      const enrollmentExpanded = enrollments.map((enrollment) => {
+        const enrollmentExp = {...enrollment, 
+          course: courses.find((course) => course.id === enrollment.courseId), 
+          user: students.find((student) => student.id === enrollment.userId)};
+        return enrollmentExp;
     })
     console.log('EnrollmentExpanded: ', enrollmentExpanded);
     return enrollmentExpanded;
+    }catch(error){
+      console.log('Se ha presentado error al consultar las inscripciones ', error.message)
+    }
   }
 
   findOne(id: string) {
