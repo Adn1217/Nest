@@ -33,32 +33,22 @@ export class CoursesService {
       return newCourseMg;
     }catch(error){
       console.log('Se presenta error: ', error);
-      let errorMsg = error
-      if(error.code === 11000){
-        errorMsg = error.keyValue
-        throw new BadRequestException(
-          `Se ha presentado error al intentar guardar el curso ${createCourseDto.curso} - ${JSON.stringify(errorMsg)} duplicado.`
-        )
-      }else{
-        throw new HttpException({
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `Se ha presentado error al intentar guardar el curso ${createCourseDto.curso} - ${JSON.stringify(errorMsg)} duplicado.`
-        }, HttpStatus.INTERNAL_SERVER_ERROR, {
-          cause: error
-        })
-      }
+      this.handleExceptions(error, 'guardar');
     }
   }
 
   async findAll() : Promise<Course[]> {
-    const coursesMg = await this.courseModel.find();
-    const courses = coursesMg.map((courseMg) => {
-      const {_id, curso, creditos} = courseMg;
-      const course = {id: _id, curso, creditos};
-      return course
-    })
-
+    try{
+      const coursesMg = await this.courseModel.find();
+      const courses = coursesMg.map((courseMg) => {
+        const {_id, curso, creditos} = courseMg;
+        const course = {id: _id, curso, creditos};
+        return course
+      })
     return courses
+    }catch(error){
+      this.handleExceptions(error, 'buscar');
+    }
   }
 
   async findOne(id: string) : Promise<Course> {
@@ -79,13 +69,14 @@ export class CoursesService {
         return courseMg;
       }
     }catch(error){
-      throw new InternalServerErrorException(`Se ha presentado error al intentar buscar el curso con id: ${id} - ${JSON.stringify(error.message)}}`);
+      this.handleExceptions(error, 'buscar', id);
     }
   }
-
+  
+  //TODO: Optimizar con el método findByIdAndUpdate
   async update(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
     try{
-      const course = await this.findOne(id);
+      const course = await this.findOne(id); 
       
       if(!course){
         // const courseLocal = this.courses.find((course) => course.id === id);
@@ -99,6 +90,7 @@ export class CoursesService {
         // }
       }else{
         const updatedCourseAck = await this.courseModel.updateOne({_id: id},updateCourseDto);
+        //TODO: updatedCourse = await course.updateOne(updateCourseDto, { new: true}) // Devuelve el curso actualizado.
         if(updatedCourseAck.modifiedCount){
           const updatedCourse = {...course, ...updateCourseDto};
           console.log('Se ha actualizado el curso: ', updatedCourse);
@@ -108,13 +100,15 @@ export class CoursesService {
         }
       }
     }catch(error){
-      throw new InternalServerErrorException(`Se ha presentado error al intentar editar el curso con id: ${id} - ${JSON.stringify(error.error)}}`);
+      this.handleExceptions(error, 'editar', id);
     }
   }
-
+  //TODO: Optimizar con el método findByIdAndDelete.
   async delete(id: string): Promise<Course> {
     try{
       const course = await this.findOne(id);
+      // const course = await this.courseModel.findByIdAndDelete(id);
+      
 
       if(!course){
         // const courseLocal = this.courses.find((course) => course.id === id);
@@ -128,6 +122,7 @@ export class CoursesService {
         // }
       }else{
         const deletedAck = await this.courseModel.deleteOne({_id: id});
+        
         if(deletedAck.deletedCount){
           console.log('Se ha borrado el curso: ', JSON.stringify(course));
         }else{
@@ -136,11 +131,31 @@ export class CoursesService {
         return course
       }
     }catch(error){
-      throw new InternalServerErrorException(`Se ha presentado error al intentar eliminar el curso con id: ${id} - ${JSON.stringify(error.message)}}`);
+      this.handleExceptions(error, 'eliminar', id);
     }
   }
 
   fillCoursesWithSEED( COURSES_SEED: Course[]){
     this.courses = COURSES_SEED;
+  }
+
+  private handleExceptions(error: any, verb: string, id?: string){
+
+    const errorMsg = error.keyValue;
+    if(id){
+      if(error.code === 11000){
+        throw new BadRequestException(`Se ha presentado error al intentar ${verb} el curso con id: ${id} - ${JSON.stringify(errorMsg)} duplicado.}`);
+      }else{
+        throw new InternalServerErrorException(`Se ha presentado error al intentar ${verb} el curso con id ${id} - ${JSON.stringify(error.message)}}`);
+      }
+    }else{
+      if (error.code === 11000){
+        throw new BadRequestException(
+          `Se ha presentado error al intentar ${verb} el curso - ${JSON.stringify(errorMsg)} duplicado.`
+        )
+      }else{
+        throw new InternalServerErrorException(`Se ha presentado error al intentar ${verb} los cursos - ${JSON.stringify(error.message)}}`);
+      }
+    }
   }
 }
