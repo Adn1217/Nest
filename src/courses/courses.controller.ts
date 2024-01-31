@@ -3,6 +3,7 @@ import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Course } from './models/courses.model';
+import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
 // import { Response as Res } from 'express';
 
 @Controller('courses')
@@ -59,7 +60,7 @@ export class CoursesController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string): Promise<Course> {
+  delete(@Param('id', ParseMongoIdPipe) id: string): Promise<Course> {
     return this.coursesService.delete(id);
   }
 }

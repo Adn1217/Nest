@@ -9,9 +9,10 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { isMongoId } from './common/middlewares/isMongoId.middeware';
 import { CoursesController } from './courses/courses.controller';
+import { CommonModule } from './common/common.module';
 
 @Module({
-  imports: [StudentsModule, CoursesModule, SeedModule, TeachersModule, EnrollmentsModule, MongooseModule.forRoot('mongodb://localhost:27017/nest-academy-platform')],
+  imports: [StudentsModule, CoursesModule, SeedModule, TeachersModule, EnrollmentsModule, MongooseModule.forRoot('mongodb://localhost:27017/nest-academy-platform'), CommonModule],
   controllers: [AppController],
   providers: [AppService],
 })
@@ -24,7 +25,12 @@ export class AppModule implements NestModule{
                 method: RequestMethod.GET,
               },
               {
-              path: 'courses', method: RequestMethod.POST
+                path: 'courses', 
+                method: RequestMethod.POST
+              },
+              {
+                path: 'courses', 
+                method: RequestMethod.PUT
               }
             )
             .forRoutes(CoursesController)

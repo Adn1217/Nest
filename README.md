@@ -32,7 +32,7 @@ docker-compose up -d
 
 Populate DB.
 
-Get Requesto to:
+Get Request to:
 
 ```
 http://localhost:3500/seed
