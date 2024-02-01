@@ -18,18 +18,10 @@ export class CoursesService {
 
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
     
-    // const newCourse = {
-    //   id: uuid(), 
-    //   ...createCourseDto, 
-    //   creditos: +createCourseDto.creditos};
-    // this.courses.push(newCourse);
     try {
       const newCourseMongo = await this.courseModel.create(createCourseDto);
-      // console.log('NewCourseMongo: ', newCourseMongo);
       const {_id, creditos, curso } = newCourseMongo;
       const newCourseMg = {id: _id.toString(), curso, creditos}
-      // this.courses.push(newCourseMg);
-      // console.log('NewCourseMongo2: ', newCourseMg);
       return newCourseMg;
     }catch(error){
       console.log('Se presenta error: ', error);
@@ -52,17 +44,11 @@ export class CoursesService {
   }
 
   async findOne(id: string) : Promise<Course> {
-    // const course = this.courses.find((course) => course.id === id);
     try{
       const course = await this.courseModel.findById(id);
 
       if(!course){
-        // const courseLocal = this.courses.find((course) => course.id === id);
-        // if(!courseLocal){
           throw new NotFoundException(`Curso con id: ${id} no encontrado.`);
-        // }else{
-        // return courseLocal;
-        // }
       }else{
         const {_id, curso, creditos} = course;
         const courseMg = {id: _id, curso, creditos};
@@ -79,15 +65,7 @@ export class CoursesService {
       const course = await this.findOne(id); 
       
       if(!course){
-        // const courseLocal = this.courses.find((course) => course.id === id);
-        // const updatedCourse = {...courseLocal, ...updateCourseDto}
-        // const index = this.courses.findIndex((course) => course.id === id);
-        // this.courses.splice(index, 1, updatedCourse);
-        // if(!courseLocal){
           throw new NotFoundException(`Curso con id: ${id} no encontrado.`);
-        // }else{
-        //   return courseLocal;
-        // }
       }else{
         const updatedCourseAck = await this.courseModel.updateOne({_id: id},updateCourseDto);
         //TODO: updatedCourse = await course.updateOne(updateCourseDto, { new: true}) // Devuelve el curso actualizado.
@@ -111,15 +89,7 @@ export class CoursesService {
       
 
       if(!course){
-        // const courseLocal = this.courses.find((course) => course.id === id);
-        // if(!courseLocal){
           throw new NotFoundException(`Curso con id: ${id} no encontrado.`);
-        // }else{
-          // const index = this.courses.findIndex((course) => course.id === id);
-          // this.courses.splice(index, 1);
-          // console.log('Se ha eliminado el curso: ', courseLocal);
-          // return courseLocal;
-        // }
       }else{
         const deletedAck = await this.courseModel.deleteOne({_id: id});
         
