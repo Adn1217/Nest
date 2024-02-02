@@ -17,7 +17,6 @@ export class CoursesService {
   private courses: Course[] = []
 
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
-    //TODO: Ajustar para considerar create SEED y modelo del Front. 
     try {
       const newCourseMongo = await this.courseModel.create(createCourseDto);
       const {_id, creditos, curso } = newCourseMongo;
@@ -29,8 +28,7 @@ export class CoursesService {
     }
   }
   
-  async createMany(createCourseDto: CreateCourseDto): Promise<any> {
-    //TODO: Ajustar para considerar create SEED y modelo del Front. 
+  async createMany(createCourseDto: CreateCourseDto | CreateCourseDto []): Promise<any> {
     try {
       const newCourseMongo = this.courseModel.create(createCourseDto);
       // const {_id, creditos, curso } = newCourseMongo;
@@ -126,14 +124,18 @@ export class CoursesService {
       return courseMg;
     });
 
-    const createdCourses = [];
-    coursesSeedMg.forEach( async (createCourse: CreateCourseDto) => {
-      const createdCourse = this.createMany(createCourse);
-      createdCourses.push( createdCourse );
-    })
-    const createdCoursesMg = Promise.all([...createdCourses]);
-    return createdCoursesMg;
+    // Haciendo uso de solicitudes individuales de creación.
+    // const createdCourses = [];
+    // coursesSeedMg.forEach( async (createCourse: CreateCourseDto) => {
+    //   const createdCourse = this.createMany(createCourse);
+    //   createdCourses.push( createdCourse );
+    // })
+    // const createdCoursesMg = Promise.all([...createdCourses]);
+
+    // Haciendo uso de un arreglo.
+    const createdCoursesMg = this.createMany(coursesSeedMg);
     // this.courses = COURSES_SEED;
+    return createdCoursesMg;
   }
 
   private handleExceptions(error: any, verb: string, id?: string){
