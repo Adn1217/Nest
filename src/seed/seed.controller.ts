@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { SeedService } from './seed.service';
+import { Course } from 'src/courses/models/courses.model';
 
 @Controller('seed')
 export class SeedController {
@@ -7,8 +8,9 @@ export class SeedController {
 
 
   @Get()
-  runSEED() {
-    return this.seedService.populateDB();
+  runSEED(): Promise<Course[]> {
+    const createdCoursesMsg = this.seedService.populateDB();
+    return createdCoursesMsg;
   }
 
 }

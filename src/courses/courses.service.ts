@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 // import { v4 as uuid } from 'uuid';
-import { Course } from './models/courses.model';
+import { Course, newCourse } from './models/courses.model';
 import { Course as CourseEntity } from './entities/course.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -17,12 +17,25 @@ export class CoursesService {
   private courses: Course[] = []
 
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
-    
+    //TODO: Ajustar para considerar create SEED y modelo del Front. 
     try {
       const newCourseMongo = await this.courseModel.create(createCourseDto);
       const {_id, creditos, curso } = newCourseMongo;
-      const newCourseMg = {id: _id.toString(), curso, creditos}
+      const newCourseMg= {id: _id.toString(), curso, creditos}
       return newCourseMg;
+    }catch(error){
+      console.log('Se presenta error: ', error);
+      this.handleExceptions(error, 'guardar');
+    }
+  }
+  
+  async createMany(createCourseDto: CreateCourseDto): Promise<any> {
+    //TODO: Ajustar para considerar create SEED y modelo del Front. 
+    try {
+      const newCourseMongo = this.courseModel.create(createCourseDto);
+      // const {_id, creditos, curso } = newCourseMongo;
+      // const newCourseMg = {id: _id.toString(), curso, creditos}
+      return newCourseMongo;
     }catch(error){
       console.log('Se presenta error: ', error);
       this.handleExceptions(error, 'guardar');
@@ -105,8 +118,22 @@ export class CoursesService {
     }
   }
 
-  fillCoursesWithSEED( COURSES_SEED: Course[]){
-    this.courses = COURSES_SEED;
+  async fillCoursesWithSEED( COURSES_SEED: newCourse[]): Promise<Course[]>{
+
+    const coursesSeedMg: CreateCourseDto [] = COURSES_SEED.map((course: newCourse) : CreateCourseDto => {
+      const {curso, creditos} = course;
+      const courseMg = {curso, creditos};
+      return courseMg;
+    });
+
+    const createdCourses = [];
+    coursesSeedMg.forEach( async (createCourse: CreateCourseDto) => {
+      const createdCourse = this.createMany(createCourse);
+      createdCourses.push( createdCourse );
+    })
+    const createdCoursesMg = Promise.all([...createdCourses]);
+    return createdCoursesMg;
+    // this.courses = COURSES_SEED;
   }
 
   private handleExceptions(error: any, verb: string, id?: string){
