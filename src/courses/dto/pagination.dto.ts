@@ -4,9 +4,9 @@ export class PaginationDto {
 
     @IsOptional()
     @IsPositive()
-    limit: number;
+    limit?: number;
 
     @IsOptional()
     @IsPositive()
-    offset: number;
+    offset?: number;
 }

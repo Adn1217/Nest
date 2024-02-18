@@ -45,7 +45,10 @@ export class CoursesService {
   async findAll(paginationDto?: PaginationDto) : Promise<Course[]> {
     const {limit, offset} = paginationDto;
     try{
-      const coursesMg = await this.courseModel.find().limit(limit).skip(offset);
+      const coursesMg = await this.courseModel.find().limit(limit).skip(offset).sort({
+        curso: 1 // Ordena por atributo curso ascendentemente.
+      })
+      //.select('-__v') // Elimina de la respuesta el atributo __v
       const courses = coursesMg.map((courseMg) => {
         const {_id, curso, creditos} = courseMg;
         const course = {id: _id, curso, creditos};
