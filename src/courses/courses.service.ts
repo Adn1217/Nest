@@ -6,6 +6,7 @@ import { Course, newCourse } from './models/courses.model';
 import { Course as CourseEntity } from './entities/course.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class CoursesService {
@@ -30,6 +31,7 @@ export class CoursesService {
   
   async createMany(createCourseDto: CreateCourseDto | CreateCourseDto []): Promise<any> {
     try {
+      //this.courseModel.insertMany ?
       const newCourseMongo = this.courseModel.create(createCourseDto);
       // const {_id, creditos, curso } = newCourseMongo;
       // const newCourseMg = {id: _id.toString(), curso, creditos}
@@ -40,9 +42,10 @@ export class CoursesService {
     }
   }
 
-  async findAll() : Promise<Course[]> {
+  async findAll(paginationDto?: PaginationDto) : Promise<Course[]> {
+    const {limit, offset} = paginationDto;
     try{
-      const coursesMg = await this.courseModel.find();
+      const coursesMg = await this.courseModel.find().limit(limit).skip(offset);
       const courses = coursesMg.map((courseMg) => {
         const {_id, curso, creditos} = courseMg;
         const course = {id: _id, curso, creditos};

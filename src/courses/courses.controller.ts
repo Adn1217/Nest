@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Header, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Header, Put, Query } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Course } from './models/courses.model';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
+import { PaginationDto } from './dto/pagination.dto';
 // import { Response as Res } from 'express';
 
 @Controller('courses')
@@ -30,8 +31,9 @@ export class CoursesController {
   
   @Get()
   @Header("Access-Control-Allow-Origin", "*") // Avoid CORS Policy.
-  findAll(): Promise<Course[]> {
-    const courses = this.coursesService.findAll();
+  findAll(@Query() paginationDto: PaginationDto): Promise<Course[]> {
+    // console.log('Pagination Queries: ', paginationDto);
+    const courses = this.coursesService.findAll(paginationDto);
     return courses;
   } 
 

@@ -10,6 +10,10 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // Elimina los atributos que no hacen parte de la clase.
       forbidNonWhitelisted: true, // Genera un error si recibe un atributo que no hace parte de la clase.
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true, // Transforma queries a número implicitamente.
+      },
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         return new BadRequestException(
           validationErrors.map((error) => ({
