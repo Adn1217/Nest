@@ -25,6 +25,6 @@ async function bootstrap() {
     }
   ))
   app.enableCors(); // Permite CORS Policy.
-  await app.listen(3500);
+  await app.listen(+process.env.PORT);
 }
 bootstrap();

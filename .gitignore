@@ -37,3 +37,6 @@ lerna-debug.log*
 #db
 
 /db
+
+#Environment Variables
+.env
