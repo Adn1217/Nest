@@ -11,10 +11,13 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { isMongoId } from './common/middlewares/isMongoId.middeware';
 import { CoursesController } from './courses/courses.controller';
 import { CommonModule } from './common/common.module';
+import { EnvConfig } from './config/env.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [EnvConfig],
+    }),
     StudentsModule, CoursesModule, SeedModule, TeachersModule, EnrollmentsModule, MongooseModule.forRoot(process.env.DB), CommonModule],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 // import { v4 as uuid } from 'uuid';
@@ -8,11 +9,23 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PaginationDto } from './dto/pagination.dto';
 
+
+enum courseOrder {
+  DESC = -1,
+  ASC = 1
+}
+
 @Injectable()
 export class CoursesService {
+  
+  private defaultOrder: string;
+
   constructor(
     @InjectModel(CourseEntity.name) 
-    private readonly courseModel: Model<CourseEntity>){
+    private readonly courseModel: Model<CourseEntity>,
+    private readonly configService: ConfigService,
+    ){
+      this.defaultOrder = configService.get<string>('COURSE_ORDER');
   }
 
   private courses: Course[] = []
@@ -45,9 +58,9 @@ export class CoursesService {
   async findAll(paginationDto?: PaginationDto) : Promise<Course[]> {
     const {limit, offset} = paginationDto;
     try{
-      const coursesMg = await this.courseModel.find().limit(limit).skip(offset).sort({
-        curso: 1 // Ordena por atributo curso ascendentemente.
-      })
+      const coursesMg = await this.courseModel.find().sort({
+        curso: courseOrder[this.defaultOrder] // Ordena por atributo curso ascendente (1) o descendentemente (-1).
+      }).limit(limit).skip(offset)
       //.select('-__v') // Elimina de la respuesta el atributo __v
       const courses = coursesMg.map((courseMg) => {
         const {_id, curso, creditos} = courseMg;
