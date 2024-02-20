@@ -22,7 +22,13 @@ npm install
 npm install -g @nestjs/cli
 ```
 
-4. Levantar la base de datos Mongo:
+4. Levantar el proyecto:
+
+```
+npm run start:dev
+```
+
+5. Levantar la base de datos Mongo:
 
 ```
 docker-compose up -d
