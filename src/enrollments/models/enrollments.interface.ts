@@ -13,3 +13,9 @@ export interface enrollmentExpanded extends Enrollment {
   user: users,
   course: Course
 }
+
+export interface enrollmentQueryParams {
+  _expand: string,
+  limit?: number,
+  offset?: number
+}

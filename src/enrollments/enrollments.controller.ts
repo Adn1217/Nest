@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpExceptio
 import { EnrollmentsService } from './enrollments.service';
 import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
-import { Enrollment, enrollmentExpanded } from './models/enrollments.interface';
+import { Enrollment, enrollmentExpanded, enrollmentQueryParams } from './models/enrollments.interface';
+import { PaginationDto } from 'src/courses/dto/pagination.dto';
 
 @Controller('enrollments')
 export class EnrollmentsController {
@@ -15,9 +16,13 @@ export class EnrollmentsController {
   }
 
   @Get()
-  findAll(@Query('_expand', new ParseBoolPipe()) expanded: boolean): Promise<Enrollment [] | enrollmentExpanded []> | Enrollment [] {
+  findAll(@Query('_expand', new ParseBoolPipe()) expanded: boolean, @Query() query: enrollmentQueryParams): Promise<Enrollment [] | enrollmentExpanded []> | Enrollment [] {
+
+    const {_expand, ...rest} = query;
+    const paginationDto: PaginationDto = rest;
+    // console.log('Pagination Queries: ', paginationDto);
     if(expanded){
-      const enrollmentsExpanded = this.enrollmentsService.findAllWithUserAndCourse();
+      const enrollmentsExpanded = this.enrollmentsService.findAllWithUserAndCourse(paginationDto);
       return enrollmentsExpanded;
     }else{
       const enrollments = this.enrollmentsService.findAll();
