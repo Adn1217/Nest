@@ -16,10 +16,10 @@ export class SeedService {
   async populateDB(): Promise<Course[]> {
     this.teacherService.fillTeachersWithSEED(TEACHERS_SEED);
     this.studentService.fillStudentsWithSEED(STUDENTS_SEED);
+    this.enrollmentService.fillEnrollmentsWithSEED(ENROLLMENTS_SEED);
     try{
       const createdCoursesMg = await this.courseService.fillCoursesWithSEED(COURSES_SEED);
       console.log('Cursos creados: ', createdCoursesMg);
-      this.enrollmentService.fillEnrollmentsWithSEED(ENROLLMENTS_SEED);
       return createdCoursesMg;
       // return `Seed loaded on DBs`;
     }catch(error){

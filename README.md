@@ -22,13 +22,17 @@ npm install
 npm install -g @nestjs/cli
 ```
 
-4. Levantar el proyecto:
+4. Copiar archivo **.env.template** como **.env**
+
+5. Ajustar variables de entorno definidas en el **.env**
+
+6. Levantar el proyecto:
 
 ```
 npm run start:dev
 ```
 
-5. Levantar la base de datos Mongo:
+7. Levantar la base de datos Mongo:
 
 ```
 docker-compose up -d

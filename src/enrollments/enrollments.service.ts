@@ -5,6 +5,7 @@ import { Enrollment, enrollmentExpanded } from './models/enrollments.interface';
 import { v4 as uuid } from 'uuid';
 import { CoursesService } from 'src/courses/courses.service';
 import { StudentsService } from 'src/students/students.service';
+import { PaginationDto } from 'src/courses/dto/pagination.dto';
 
 @Injectable()
 export class EnrollmentsService {
@@ -51,14 +52,15 @@ export class EnrollmentsService {
   }
 
   //TODO: Ajustar para que coincidan IDs de estudiantes con Mongo DB.
-  async findAllWithUserAndCourse(): Promise<enrollmentExpanded []> {
+  async findAllWithUserAndCourse(paginationDto?: PaginationDto): Promise<enrollmentExpanded []> {
     const enrollments = this.findAll();
     const students = this.studentsService.findAll();
     try{
-      const courses = await this.coursesService.findAll();
+      const courses = await this.coursesService.findAll(paginationDto);
+      // console.log('Courses: ', courses);
       const enrollmentExpanded = enrollments.map((enrollment) => {
         const enrollmentExp = {...enrollment, 
-          course: courses.find((course) => course.id === enrollment.courseId), 
+          course: courses.find((course) => course.id.valueOf() === enrollment.courseId), 
           user: students.find((student) => student.id === enrollment.userId)};
         return enrollmentExp;
     })
