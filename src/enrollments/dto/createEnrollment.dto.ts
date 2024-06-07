@@ -3,13 +3,13 @@ import { IsNotEmpty, IsString, IsUUID } from "class-validator";
 export class CreateEnrollmentDto {
 
         @IsString({message: 'Atributos deben contener "courseId"'})
-        @IsUUID()
+        // @IsUUID()
         @IsNotEmpty()
         readonly courseId: string;
 
 
         @IsString({message: 'Atributos deben contener "userId"'})
-        @IsUUID()
+        // @IsUUID()
         @IsNotEmpty()
         readonly userId: string;
 }

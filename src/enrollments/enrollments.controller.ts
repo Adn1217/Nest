@@ -4,6 +4,7 @@ import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
 import { Enrollment, enrollmentExpanded, enrollmentQueryParams } from './models/enrollments.interface';
 import { PaginationDto } from 'src/courses/dto/pagination.dto';
+import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
 
 @Controller('enrollments')
 export class EnrollmentsController {

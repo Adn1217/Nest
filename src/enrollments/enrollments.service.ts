@@ -1,19 +1,31 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
-import { Enrollment, enrollmentExpanded } from './models/enrollments.interface';
+import { Enrollment, enrollmentExpanded, newEnrollment } from './models/enrollments.interface';
 import { v4 as uuid } from 'uuid';
 import { CoursesService } from 'src/courses/courses.service';
 import { StudentsService } from 'src/students/students.service';
 import { PaginationDto } from 'src/courses/dto/pagination.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Enrollment as EnrollmentEntity } from './entities/enrollment.entity';
+import { Model } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EnrollmentsService {
 
   private enrollments: Enrollment [] = [];
+  private defaultOrder: string;
+  
+  constructor(
+    private readonly studentsService: StudentsService, 
+    private readonly coursesService: CoursesService,
 
-  constructor(private readonly studentsService: StudentsService, private readonly coursesService: CoursesService){
-
+    @InjectModel(EnrollmentEntity.name) 
+    private readonly enrollmentModel: Model<EnrollmentEntity>,
+    private readonly configService: ConfigService,
+  ){
+    this.defaultOrder = configService.get<string>('COURSE_ORDER');
   }
 
   checkStudentAndCourse(enrollmentDto: CreateEnrollmentDto | UpdateEnrollmentDto){
@@ -72,7 +84,7 @@ export class EnrollmentsService {
   }
 
   findOne(id: string) {
-    const enrollment = this.enrollments.find((enrollment) => enrollment.id === id);
+    const enrollment = this.enrollments.find((enrollment) => enrollment.id.valueOf() === id);
     if(!enrollment){
       throw new NotFoundException(`Inscripción con id: ${id} no encontrada.`)
     }
@@ -95,8 +107,55 @@ export class EnrollmentsService {
     return enrollment;
   }
 
-  fillEnrollmentsWithSEED( ENROLLMENTS_SEED: Enrollment[]){
-    this.enrollments = ENROLLMENTS_SEED;
+  // fillEnrollmentsWithSEED( ENROLLMENTS_SEED: Enrollment[]){
+  //   this.enrollments = ENROLLMENTS_SEED;
+  // }
+
+  async fillEnrollmentsWithSEED( ENROLLMENTS_SEED: newEnrollment[]): Promise<Enrollment[]>{
+
+    const enrollmentsSeedMg: CreateEnrollmentDto [] = ENROLLMENTS_SEED.map((enrollment: newEnrollment) : CreateEnrollmentDto => {
+      const {courseId, userId} = enrollment;
+      const enrollmentMg = {courseId, userId};
+      return enrollmentMg;
+    });
+
+    // Haciendo uso de un arreglo.
+    const createdEnrollmentsMg = this.createMany(enrollmentsSeedMg);
+    // this.courses = COURSES_SEED;
+    return createdEnrollmentsMg;
+  }
+  
+  async createMany(createEnrollmentDto: CreateEnrollmentDto | CreateEnrollmentDto []): Promise<any> {
+    try {
+      //this.courseModel.insertMany ?
+      const newEnrollmentMongo = this.enrollmentModel.create(createEnrollmentDto);
+      // const {_id, creditos, curso } = newCourseMongo;
+      // const newCourseMg = {id: _id.toString(), curso, creditos}
+      return newEnrollmentMongo;
+    }catch(error){
+      console.log('Se presenta error: ', error);
+      this.handleExceptions(error, 'guardar');
+    }
+  }
+  
+  private handleExceptions(error: any, verb: string, id?: string){
+
+    const errorMsg = error.keyValue;
+    if(id){
+      if(error.code === 11000){
+        throw new BadRequestException(`Se ha presentado error al intentar ${verb} la inscripción con id: ${id} - ${JSON.stringify(errorMsg)} duplicado.}`);
+      }else{
+        throw new InternalServerErrorException(`Se ha presentado error al intentar ${verb} la inscrupción con id ${id} - ${JSON.stringify(error.message)}}`);
+      }
+    }else{
+      if (error.code === 11000){
+        throw new BadRequestException(
+          `Se ha presentado error al intentar ${verb} la inscripción - ${JSON.stringify(errorMsg)} duplicado.`
+        )
+      }else{
+        throw new InternalServerErrorException(`Se ha presentado error al intentar ${verb} las inscripciones - ${JSON.stringify(error.message)}}`);
+      }
+    }
   }
 
 }

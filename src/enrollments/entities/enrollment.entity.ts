@@ -17,7 +17,6 @@ export class Enrollment extends Document {
     })
     userId: string;
 }
-      
 
 @Schema()
 export class EnrollmentExpanded extends Enrollment {

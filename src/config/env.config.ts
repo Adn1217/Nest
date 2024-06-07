@@ -4,4 +4,5 @@ export const EnvConfig = () => ({
     db: process.env.DB,
     port: process.env.PORT || 3001,
     courseOrder: process.env.COURSE_ORDER || 1,
+    enrollmentOrder: process.env.ENROLLMENT_ORDER || 1,
 });

@@ -4,7 +4,7 @@ import { StudentsService } from 'src/students/students.service';
 import { STUDENTS_SEED, COURSES_SEED, TEACHERS_SEED, ENROLLMENTS_SEED } from './data';
 import { TeachersService } from 'src/teachers/teachers.service';
 import { EnrollmentsService } from 'src/enrollments/enrollments.service';
-import { Course } from 'src/courses/models/courses.model';
+import { seedDB } from './models/seedDB.model';
 
 @Injectable()
 export class SeedService {
@@ -13,19 +13,41 @@ export class SeedService {
 
   }
 
-  async populateDB(): Promise<Course[]> {
+  async populateDB(): Promise<seedDB> {
+
+    const createdSeedDB : seedDB = {
+      createdCourses: [] ,
+      createdEnrollments: []
+    }
+
     this.teacherService.fillTeachersWithSEED(TEACHERS_SEED);
     this.studentService.fillStudentsWithSEED(STUDENTS_SEED);
-    this.enrollmentService.fillEnrollmentsWithSEED(ENROLLMENTS_SEED);
     try{
-      const createdCoursesMg = await this.courseService.fillCoursesWithSEED(COURSES_SEED);
-      console.log('Cursos creados: ', createdCoursesMg);
-      return createdCoursesMg;
+      
+      const createdEnrollmentsMg = await this.enrollmentService.fillEnrollmentsWithSEED(ENROLLMENTS_SEED);
+      // const createdCoursesMg = await this.courseService.fillCoursesWithSEED(COURSES_SEED);
+      console.log('Inscripciones creadas: ', createdEnrollmentsMg);
+      createdSeedDB.createdEnrollments = createdEnrollmentsMg;
+      // return createdEnrollmentsMg;
       // return `Seed loaded on DBs`;
     }catch(error){
       if(error.code === 11000){
         throw new BadRequestException(`Se ha presentado error al intentar cargar los cursos por defecto - ${JSON.stringify(error.message)}}`);
       }
     }
+
+    try{
+      const createdCoursesMg = await this.courseService.fillCoursesWithSEED(COURSES_SEED);
+      console.log('Cursos creados: ', createdCoursesMg);
+      createdSeedDB.createdCourses = createdCoursesMg;
+      // return createdCoursesMg;
+      // return `Seed loaded on DBs`;
+    }catch(error){
+      if(error.code === 11000){
+        throw new BadRequestException(`Se ha presentado error al intentar cargar los cursos por defecto - ${JSON.stringify(error.message)}}`);
+      }
+    }
+
+    return createdSeedDB;
   }
 }
