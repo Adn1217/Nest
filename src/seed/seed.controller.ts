@@ -1,6 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
 import { SeedService } from './seed.service';
-import { Course } from 'src/courses/models/courses.model';
 import { seedDB } from './models/seedDB.model';
 
 @Controller('seed')
