@@ -33,13 +33,13 @@ export class EnrollmentsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({version: '4'})) id: string) {
+  findOne(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe) {
     const enrollment = this.enrollmentsService.findOne(id);
     return enrollment;
   }
 
   @Put(':id')
-  update(@Param('id', new ParseUUIDPipe({version: '4'})) id: string, @Body() updateEnrollmentDto: UpdateEnrollmentDto) {
+  update(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe, @Body() updateEnrollmentDto: UpdateEnrollmentDto) {
     if (Object.keys(updateEnrollmentDto).length === 0){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -52,7 +52,8 @@ export class EnrollmentsController {
   }
 
   @Delete(':id')
-  delete(@Param('id', new ParseUUIDPipe({version: '4'})) id: string) {
+  // delete(@Param('id', new ParseUUIDPipe({version: '4'})) id: string) {
+  delete(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe) {
     const deletedEnrollment = this.enrollmentsService.delete(id);
     return deletedEnrollment;
   }

@@ -1,11 +1,11 @@
 import { Course } from 'src/courses/models/courses.model';
 
 export const COURSES_SEED: Course[] = [
-    {
-      id: "c08a8a45-e9b1-41b8-8151-fdd68bb75ecb",
-      curso: "Cálculo I",
-      creditos: 3
-    },
+    // {
+    //   id: "c08a8a45-e9b1-41b8-8151-fdd68bb75ecb",
+    //   curso: "Cálculo I",
+    //   creditos: 3
+    // },
     // {
     //   id: "6e480589-387d-4805-8fcc-35bebc23f5ce",
     //   curso: "Cálculo II",

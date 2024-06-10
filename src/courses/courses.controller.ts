@@ -38,13 +38,13 @@ export class CoursesController {
   } 
 
   @Get(':id')
-  findOne(@Param('id') id: string) : Promise<Course> {
+  findOne(@Param('id') id: ParseMongoIdPipe) : Promise<Course> {
     const course = this.coursesService.findOne(id);
     return course;
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) : Promise<Course> {
+  update(@Param('id') id: ParseMongoIdPipe, @Body() updateCourseDto: UpdateCourseDto) : Promise<Course> {
     if (Object.keys(updateCourseDto).length === 0){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -62,7 +62,7 @@ export class CoursesController {
   }
 
   @Delete(':id')
-  delete(@Param('id', ParseMongoIdPipe) id: string): Promise<Course> {
+  delete(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe): Promise<Course> {
     return this.coursesService.delete(id);
   }
 }

@@ -1,12 +1,13 @@
+import { ParseMongoIdPipe } from "src/common/pipes/parse-mongo-id.pipe";
 import { Course } from "src/courses/models/courses.model";
 import { users } from "src/students/models/students.interface";
 
 export interface newEnrollment {
-  courseId: string,
+  courseId: ParseMongoIdPipe,
   userId: string
   }
 export interface Enrollment extends newEnrollment {
-    id: string;
+    id: ParseMongoIdPipe;
   }
 
 export interface enrollmentExpanded extends Enrollment {
