@@ -6,16 +6,16 @@ export const COURSES_SEED: Course[] = [
       curso: "Cálculo I",
       creditos: 3
     },
-    {
-      id: "6e480589-387d-4805-8fcc-35bebc23f5ce",
-      curso: "Cálculo II",
-      creditos: 3
-    },
-    {
-      id: "4b2bfcfd-f4bf-4279-ae5d-73ec05f75020",
-      curso: "Cálculo III",
-      creditos: 3
-    },
+    // {
+    //   id: "6e480589-387d-4805-8fcc-35bebc23f5ce",
+    //   curso: "Cálculo II",
+    //   creditos: 3
+    // },
+    // {
+    //   id: "4b2bfcfd-f4bf-4279-ae5d-73ec05f75020",
+    //   curso: "Cálculo III",
+    //   creditos: 3
+    // },
     // {
     //   id: "a0b2706e-c0bc-49e8-be53-ba6002793633",
     //   curso: "Ecuaciones Diferenciales",

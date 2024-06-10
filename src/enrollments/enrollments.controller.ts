@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Query, ParseBoolPipe, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Query, ParseBoolPipe, Put, Header } from '@nestjs/common';
 import { EnrollmentsService } from './enrollments.service';
 import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
@@ -17,6 +17,7 @@ export class EnrollmentsController {
   }
 
   @Get()
+  @Header("Access-Control-Allow-Origin", "*") // Avoid CORS Policy.
   findAll(@Query('_expand', new ParseBoolPipe()) expanded: boolean, @Query() query: enrollmentQueryParams): Promise<Enrollment [] | enrollmentExpanded []> | Enrollment [] {
 
     const {_expand, ...rest} = query;
@@ -26,7 +27,7 @@ export class EnrollmentsController {
       const enrollmentsExpanded = this.enrollmentsService.findAllWithUserAndCourse(paginationDto);
       return enrollmentsExpanded;
     }else{
-      const enrollments = this.enrollmentsService.findAll();
+      const enrollments = this.enrollmentsService.findAll(paginationDto);
       return enrollments
     }
   }

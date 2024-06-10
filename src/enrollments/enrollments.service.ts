@@ -11,6 +11,12 @@ import { Enrollment as EnrollmentEntity } from './entities/enrollment.entity';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 
+
+
+enum enrollmentOrder {
+  DESC = -1,
+  ASC = 1
+}
 @Injectable()
 export class EnrollmentsService {
 
@@ -58,16 +64,34 @@ export class EnrollmentsService {
     return newEnrollment;
   }
 
-  findAll(): Enrollment [] {
-    const enrollments = this.enrollments;
-    return enrollments;
+  // findAll(): Enrollment [] {
+  //   const enrollments = this.enrollments;
+  //   return enrollments;
+  // }
+  
+  async findAll(paginationDto?: PaginationDto) : Promise<Enrollment[]> {
+    const {limit, offset} = paginationDto;
+    try{
+      const enrollmentMg = await this.enrollmentModel.find().sort({
+        id: enrollmentOrder[this.defaultOrder] // Ordena por atributo curso ascendente (1) o descendentemente (-1).
+      }).limit(limit).skip(offset)
+      //.select('-__v') // Elimina de la respuesta el atributo __v
+      const enrollments = enrollmentMg.map((enrollmentMg) => {
+        const {_id, courseId, userId} = enrollmentMg;
+        const enrollment = {id: _id, courseId, userId};
+        return enrollment
+      })
+    return enrollments
+    }catch(error){
+      this.handleExceptions(error, 'buscar');
+    }
   }
 
   //TODO: Ajustar para que coincidan IDs de estudiantes con Mongo DB.
   async findAllWithUserAndCourse(paginationDto?: PaginationDto): Promise<enrollmentExpanded []> {
-    const enrollments = this.findAll();
     const students = this.studentsService.findAll();
     try{
+      const enrollments = await this.findAll(paginationDto);
       const courses = await this.coursesService.findAll(paginationDto);
       // console.log('Courses: ', courses);
       const enrollmentExpanded = enrollments.map((enrollment) => {
