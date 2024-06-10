@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
 import { Enrollment, enrollmentExpanded, newEnrollment } from './models/enrollments.interface';
-// import { v4 as uuid } from 'uuid';
 import { CoursesService } from 'src/courses/courses.service';
 import { StudentsService } from 'src/students/students.service';
 import { PaginationDto } from 'src/courses/dto/pagination.dto';
@@ -21,7 +20,6 @@ enum enrollmentOrder {
 @Injectable()
 export class EnrollmentsService {
 
-  private enrollments: Enrollment [] = [];
   private defaultOrder: string;
   
   constructor(
@@ -58,17 +56,6 @@ export class EnrollmentsService {
     return true;
   }
   
-  // create(createEnrollmentDto: CreateEnrollmentDto) {
-
-  //   this.checkStudentAndCourse(createEnrollmentDto);
-  //   const newEnrollment = {
-  //     id: uuid(),
-  //     ...createEnrollmentDto, 
-  //   }
-  //   this.enrollments.push(newEnrollment);
-  //   return newEnrollment;
-  // }
-  
   async create(createEnrollmentDto: CreateEnrollmentDto): Promise<Enrollment> {
     try {
       await this.checkStudentAndCourse(createEnrollmentDto);
@@ -82,11 +69,6 @@ export class EnrollmentsService {
     }
   }
 
-  // findAll(): Enrollment [] {
-  //   const enrollments = this.enrollments;
-  //   return enrollments;
-  // }
-  
   async findAll(paginationDto?: PaginationDto) : Promise<Enrollment[]> {
     const {limit, offset} = paginationDto;
     try{
@@ -105,7 +87,6 @@ export class EnrollmentsService {
     }
   }
 
-  //TODO: Ajustar para que coincidan IDs de estudiantes con Mongo DB.
   async findAllWithUserAndCourse(paginationDto?: PaginationDto): Promise<enrollmentExpanded []> {
     const students = this.studentsService.findAll();
     try{
@@ -118,7 +99,7 @@ export class EnrollmentsService {
           user: students.find((student) => student.id === enrollment.userId)};
         return enrollmentExp;
     })
-    console.log('EnrollmentExpanded: ', enrollmentExpanded);
+    // console.log('EnrollmentExpanded: ', enrollmentExpanded);
     return enrollmentExpanded;
     }catch(error){
       console.log('Se ha presentado error al consultar las inscripciones ', error.message)
@@ -148,12 +129,10 @@ export class EnrollmentsService {
       if(!enrollment){
           throw new NotFoundException(`Inscripción con id: ${id} no encontrada.`);
       }else{
-        // const updatedEnrollmentAck = await this.enrollmentModel.updateOne({_id: id},updateEnrollmentDto);
         const updatedEnrollment = await this.enrollmentModel.findOneAndUpdate({_id: id}, updateEnrollmentDto, { new: true}) // Devuelve la inscripción actualizada.
-        // console.log('Nueva inscripción: ', updatedEnrollment);
         if(updatedEnrollment){
           const updatedEnrollment = {...enrollment, ...updateEnrollmentDto};
-          console.log('Se ha actualizado el curso: ', updatedEnrollment);
+          console.log('Se ha actualizado la inscripción: ', updatedEnrollment);
           return updatedEnrollment;
         }else{
           throw new Error('Inscripción no actualizada.')
@@ -164,39 +143,14 @@ export class EnrollmentsService {
     }
   }
   
-  // update(id: string, updateEnrollmentDto: UpdateEnrollmentDto) {
-  //   this.checkStudentAndCourse(updateEnrollmentDto);
-  //   const enrollment = this.findOne(id);
-  //   const updatedEnrollment = {...enrollment, ...updateEnrollmentDto}
-  //   const index = this.enrollments.findIndex((enrollment) => enrollment.id === id);
-  //   this.enrollments.splice(index, 1, updatedEnrollment);
-  //   return updatedEnrollment;
-  // }
-
-  // delete(id: ParseMongoIdPipe) {
-  //   const enrollment = this.findOne(id);
-  //   const index = this.enrollments.findIndex((enrollment) => enrollment.id === id);
-  //   this.enrollments.splice(index, 1);
-  //   return enrollment;
-  // }
-  
-  //TODO: Optimizar con el método findByIdAndDelete.
   async delete(id: ParseMongoIdPipe): Promise<Enrollment> {
     try{
-      // const course = await this.findOne(id);
       const enrollment = await this.enrollmentModel.findOneAndDelete({_id: id});
-      console.log('Respuesta: ', enrollment);
+      // console.log('Respuesta Delete: ', enrollment);
 
       if(!enrollment){
           throw new NotFoundException(`Inscripción con id: ${id} no encontrada.`);
       }else{
-        // const deletedAck = await this.enrollmentModel.deleteOne({_id: id});
-        
-        // if(deletedAck.deletedCount){
-        //   console.log('Se ha borrado la inscricpción: ', JSON.stringify(enrollment));
-        // }else{
-        //   throw new Error(`Inscripción no borrada.`)
-        // }
         const {_id, courseId, userId} = enrollment;
         const enrollmentDeleted = {id: _id, courseId, userId};
         return enrollmentDeleted;
@@ -206,10 +160,6 @@ export class EnrollmentsService {
     }
   }
 
-
-  // fillEnrollmentsWithSEED( ENROLLMENTS_SEED: Enrollment[]){
-  //   this.enrollments = ENROLLMENTS_SEED;
-  // }
 
   async fillEnrollmentsWithSEED( ENROLLMENTS_SEED: newEnrollment[]): Promise<Enrollment[]>{
 
@@ -221,7 +171,6 @@ export class EnrollmentsService {
 
     // Haciendo uso de un arreglo.
     const createdEnrollmentsMg = this.createMany(enrollmentsSeedMg);
-    // this.courses = COURSES_SEED;
     return createdEnrollmentsMg;
   }
   

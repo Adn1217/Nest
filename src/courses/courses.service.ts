@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { ConfigService } from '@nestjs/config';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
-// import { v4 as uuid } from 'uuid';
 import { Course, newCourse } from './models/courses.model';
 import { Course as CourseEntity } from './entities/course.entity';
 import { InjectModel } from '@nestjs/mongoose';
@@ -38,7 +37,7 @@ export class CoursesService {
       const newCourseMg= {id: _id.toString(), curso, creditos}
       return newCourseMg;
     }catch(error){
-      console.log('Se presenta error: ', error);
+      // console.log('Se presenta error: ', error);
       this.handleExceptions(error, 'guardar');
     }
   }
@@ -51,7 +50,7 @@ export class CoursesService {
       // const newCourseMg = {id: _id.toString(), curso, creditos}
       return newCourseMongo;
     }catch(error){
-      console.log('Se presenta error: ', error);
+      // console.log('Se presenta error: ', error);
       this.handleExceptions(error, 'guardar');
     }
   }
@@ -86,7 +85,7 @@ export class CoursesService {
         return courseMg;
       }
     }catch(error){
-      console.log('Se presenta error: ', error );
+      // console.log('Se presenta error: ', error );
       this.handleExceptions(error, 'buscar', id);
     }
   }
@@ -101,7 +100,7 @@ export class CoursesService {
       }else{
         const updatedCourseAck = await this.courseModel.updateOne({_id: id},updateCourseDto);
         //TODO: updatedCourse = await course.updateOne(updateCourseDto, { new: true}) // Devuelve el curso actualizado.
-        console.log('Ack: ', updatedCourseAck)
+        // console.log('Ack: ', updatedCourseAck)
         if(updatedCourseAck.modifiedCount){
           const updatedCourse = {...course, ...updateCourseDto};
           console.log('Se ha actualizado el curso: ', updatedCourse);
@@ -113,7 +112,7 @@ export class CoursesService {
         }
       }
     }catch(error){
-      console.log('Se ha presentado error actualizando el curso: ', error);
+      // console.log('Se ha presentado error actualizando el curso: ', error);
       this.handleExceptions(error, 'editar', id);
     }
   }
@@ -123,7 +122,6 @@ export class CoursesService {
       const course = await this.findOne(id);
       // const course = await this.courseModel.findByIdAndDelete(id);
       
-
       if(!course){
           throw new NotFoundException(`Curso con id: ${id} no encontrado.`);
       }else{
@@ -159,7 +157,6 @@ export class CoursesService {
 
     // Haciendo uso de un arreglo.
     const createdCoursesMg = this.createMany(coursesSeedMg);
-    // this.courses = COURSES_SEED;
     return createdCoursesMg;
   }
 

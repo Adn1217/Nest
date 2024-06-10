@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Query, ParseBoolPipe, Put, Header } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Query, ParseBoolPipe, Put, Header } from '@nestjs/common';
 import { EnrollmentsService } from './enrollments.service';
 import { CreateEnrollmentDto } from './dto/createEnrollment.dto';
 import { UpdateEnrollmentDto } from './dto/updateEnrollment.dto';
@@ -52,7 +52,6 @@ export class EnrollmentsController {
   }
 
   @Delete(':id')
-  // delete(@Param('id', new ParseUUIDPipe({version: '4'})) id: string) {
   delete(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe) {
     const deletedEnrollment = this.enrollmentsService.delete(id);
     return deletedEnrollment;
