@@ -1,4 +1,4 @@
-import { newUser, users } from 'src/students/models/students.interface';
+import { newUser } from 'src/students/models/students.interface';
 
 
 export const STUDENTS_SEED : newUser [] = [
