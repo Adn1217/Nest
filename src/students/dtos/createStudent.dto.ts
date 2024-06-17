@@ -4,6 +4,8 @@ import { userRol, userRoles } from "../models/students.interface";
 const MINCHAR: number = 8;
 
 export class CreateStudentDto {
+
+
     @IsString({message: 'Atributos deben contener "nombres"'})
     public readonly nombres: string;
 
@@ -30,6 +32,16 @@ export class CreateStudentDto {
     @IsString({message: 'Atributos deben contener "role"'})
     @IsEnum(userRoles)
     public readonly role: userRol
+    
+    constructor(nombres: string, apellidos: string, usuario: string, edad: number, correo: string, password: string, role: string){
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.usuario = usuario;
+        this.edad = edad;
+        this.correo = correo;
+        this.password = password;
+        this.role = role as userRol;
+    }
 
     public getAttributes(){
         const studentDto = {

@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import { StudentsService } from './students.service';
-import { users } from './models/students.interface';
+import { studentQueryParams, users } from './models/students.interface';
 import { CreateStudentDto, UpdateStudentDto } from './dtos';
+import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
+import { PaginationDto } from 'src/courses/dto/pagination.dto';
 
 @Controller('users')
 export class StudentsController {
@@ -11,44 +13,46 @@ export class StudentsController {
   }
 
   @Get()
-  getStudents(@Query('correo') correo: string) : users[] | users{
+  async getStudents(@Query() query: studentQueryParams) : Promise<users[] | users>{
+    const {correo, ...rest} = query;
+    const paginationDto: PaginationDto = rest;
     if(correo){
-      const student = this.studentsService.findByEmail(correo);
+      const student = await this.studentsService.findByEmail(correo);
       return student;
     }else{
-      const students = this.studentsService.findAll();
+      const students = await this.studentsService.findAll(paginationDto);
       return students;
     }
   }
 
   @Get('/:id')
-  getStudentById(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string): users{
-  const student = this.studentsService.findById(id);
+  async getStudentById(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe): Promise<users>{
+  const student = this.studentsService.findOne(id);
     return student 
   }
 
   @Post()
   // @UsePipes(ValidationPipe) // Se implementa globalmente en la app.
-  createStudent(@Body() studentDto: CreateStudentDto): users{
-    const newUser = this.studentsService.createStudent(studentDto);
+  async createStudent(@Body() studentDto: CreateStudentDto): Promise<users>{
+    const newUser = this.studentsService.create(studentDto);
     return newUser
   }
   
   @Put('/:id')
-  updateStudent(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string, @Body() studentDto: UpdateStudentDto ): users{
+  async updateStudent(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe, @Body() studentDto: UpdateStudentDto ): Promise<users>{
     if (Object.keys(studentDto).length === 0){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
         error: `No se encuentra información en el payload`,
       }, HttpStatus.BAD_REQUEST)
     }
-    const updatedStudent = this.studentsService.updateStudent(id, studentDto);
+    const updatedStudent = await this.studentsService.update(id, studentDto);
     return updatedStudent
   }
 
   @Delete('/:id')
-  deleteStudent(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string) : users{
-    const deletedStudent = this.studentsService.deleteStudent(id);
+  async deleteStudent(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe) : Promise<users>{
+    const deletedStudent = await this.studentsService.delete(id);
     return deletedStudent;
   }
 }

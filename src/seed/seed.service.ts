@@ -16,12 +16,27 @@ export class SeedService {
   async populateDB(): Promise<seedDB> {
 
     const createdSeedDB : seedDB = {
+      createdStudents: [],
+      createdTeachers: [],
       createdCourses: [] ,
       createdEnrollments: []
     }
 
+    // createdSeedDB.createdTeachers = this.teacherService.fillTeachersWithSEED(TEACHERS_SEED);
+    // console.log('Profesores creados: ', createdSeedDB.createdTeachers);
     this.teacherService.fillTeachersWithSEED(TEACHERS_SEED);
-    this.studentService.fillStudentsWithSEED(STUDENTS_SEED);
+    console.log('Profesores creados: ', TEACHERS_SEED);
+    try{
+
+      const createdStudentsMg = await this.studentService.fillStudentsWithSEED(STUDENTS_SEED);
+      console.log('Estudiantes creados: ', createdStudentsMg);
+      createdSeedDB.createdStudents = createdStudentsMg;
+    }catch(error){
+      if(error.code === 11000){
+        throw new BadRequestException(`Se ha presentado error al intentar cargar los estudiantes por defecto - ${JSON.stringify(error.message)}}`);
+      }
+    }
+
     try{
       
       const createdEnrollmentsMg = await this.enrollmentService.fillEnrollmentsWithSEED(ENROLLMENTS_SEED);

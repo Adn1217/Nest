@@ -3,12 +3,12 @@ export const ENROLLMENTS_SEED = [
     // {
     //     "id": "35e69c9a-fa82-4b16-b2b6-1410065278e1",
     //     "courseId": "65d4cc7d804a222aa0a92302",
-    //     "userId": "f87b0e98-0846-4b0d-a426-ab85941260b2"
+    //     "userId": "666f85fea751a6fb92b7a0142"
     // },
     // {
     //     "id": "0d666d18-5e6f-4ce9-a4df-3d6a1a58b909",
     //     "courseId": "66676a6d9582f2af6b40707f",
-    //     "userId": "5997e7d5-e637-48be-9026-3ed88491d6a8"
+    //     "userId": "666f85fea751a6fb92b7a010"
     // }
 ]
 

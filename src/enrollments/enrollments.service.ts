@@ -36,10 +36,18 @@ export class EnrollmentsService {
   async checkStudentAndCourse(enrollmentDto: CreateEnrollmentDto | UpdateEnrollmentDto, id?: ParseMongoIdPipe): Promise<boolean>{
 
     if(enrollmentDto.userId){
-      const student = this.studentsService.findById(enrollmentDto.userId);
-      if(!student){
-        throw new NotFoundException(`No se encuentra el usuario con id ${enrollmentDto.userId}`)
+      try{
+        const student = await this.studentsService.findOne(enrollmentDto.userId);
+        if(!student){
+          throw new NotFoundException(`No se encuentra el estudiante con id ${enrollmentDto.userId}`)
+        }
+      }catch(error){
+        id ? this.handleExceptions(error, 'consultar', enrollmentDto.userId) : this.handleExceptions(error, 'consultar');
       }
+      // const student = this.studentsService.findOne(enrollmentDto.userId);
+      // if(!student){
+      //   throw new NotFoundException(`No se encuentra el usuario con id ${enrollmentDto.userId}`)
+      // }
     }
     
     if (enrollmentDto.courseId){
@@ -88,15 +96,15 @@ export class EnrollmentsService {
   }
 
   async findAllWithUserAndCourse(paginationDto?: PaginationDto): Promise<enrollmentExpanded []> {
-    const students = this.studentsService.findAll();
     try{
+      const students = await this.studentsService.findAll(paginationDto);
       const enrollments = await this.findAll(paginationDto);
       const courses = await this.coursesService.findAll(paginationDto);
       // console.log('Courses: ', courses);
       const enrollmentExpanded = enrollments.map((enrollment) => {
         const enrollmentExp = {...enrollment, 
           course: courses.find((course) => course.id.valueOf() === enrollment.courseId.valueOf()), 
-          user: students.find((student) => student.id === enrollment.userId)};
+          user: students.find((student) => student.id.valueOf() === enrollment.userId)};
         return enrollmentExp;
     })
     // console.log('EnrollmentExpanded: ', enrollmentExpanded);
@@ -131,7 +139,7 @@ export class EnrollmentsService {
       }else{
         const updatedEnrollment = await this.enrollmentModel.findOneAndUpdate({_id: id}, updateEnrollmentDto, { new: true}) // Devuelve la inscripción actualizada.
         if(updatedEnrollment){
-          const updatedEnrollment = {...enrollment, ...updateEnrollmentDto};
+          // const updatedEnrollment = {...enrollment, ...updateEnrollmentDto};
           console.log('Se ha actualizado la inscripción: ', updatedEnrollment);
           return updatedEnrollment;
         }else{
@@ -201,7 +209,7 @@ export class EnrollmentsService {
     }else{
       if (error.code === 11000){
         throw new BadRequestException(
-          `Se ha presentado error al intentar ${verb} la inscripción - ${JSON.stringify(errorMsg)} duplicado.`
+          `Se ha presentado error al intentar ${verb} las inscripciones - ${JSON.stringify(errorMsg)} duplicado.`
         )
       }else{
         throw new InternalServerErrorException(`Se ha presentado error al intentar ${verb} las inscripciones - ${JSON.stringify(error.message)}}`);

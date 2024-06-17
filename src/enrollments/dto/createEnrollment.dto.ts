@@ -10,11 +10,11 @@ export class CreateEnrollmentDto {
         readonly courseId: ParseMongoIdPipe;
 
 
-        @IsString({message: 'Atributos deben contener "userId"'})
-        @IsUUID()
+        // @IsString({message: 'Atributos deben contener "userId"'})
+        // @IsUUID()
         @IsNotEmpty({message: 'Atributos deben contener "courseId"'})
-        // @IsMongoId({message: 'Atributo debe ser un mongoId'})
-        readonly userId: string;
+        @IsMongoId({message: 'Atributo debe ser un mongoId'})
+        readonly userId: ParseMongoIdPipe;
 }
 
 

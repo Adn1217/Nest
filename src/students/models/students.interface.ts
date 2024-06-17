@@ -1,3 +1,4 @@
+import { ParseMongoIdPipe } from "src/common/pipes/parse-mongo-id.pipe";
 
 export type userRol = 'user' | 'admin'
 export enum userRoles {
@@ -15,5 +16,10 @@ export interface newUser {
     role: userRol
   }
 export interface users extends newUser {
-    id: string;
+    id: ParseMongoIdPipe;
   }
+export interface studentQueryParams {
+  correo: string,
+  limit?: number,
+  offset?: number
+}

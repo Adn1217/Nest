@@ -49,5 +49,6 @@ export class TeachersService {
 
   fillTeachersWithSEED( TEACHERS_SEED: Teacher[]){
     this.teachers = TEACHERS_SEED;
+    return TEACHERS_SEED
   }
 }

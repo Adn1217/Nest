@@ -16,7 +16,7 @@ export class Enrollment extends Document {
     @Prop({
         index: true,
     })
-    userId: string;
+    userId: ParseMongoIdPipe;
 }
 
 @Schema()

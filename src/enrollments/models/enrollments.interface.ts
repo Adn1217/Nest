@@ -4,7 +4,7 @@ import { users } from "src/students/models/students.interface";
 
 export interface newEnrollment {
   courseId: ParseMongoIdPipe,
-  userId: string
+  userId: ParseMongoIdPipe
   }
 export interface Enrollment extends newEnrollment {
     id: ParseMongoIdPipe;
