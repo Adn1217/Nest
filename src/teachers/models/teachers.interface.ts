@@ -1,7 +1,6 @@
 import { userRol } from "src/students/models/students.interface"
 
-export interface Teacher {
-  id: string 
+export interface newTeacher {
   nombres: string,
   apellidos: string,
   usuario: string,
@@ -11,4 +10,8 @@ export interface Teacher {
   correo: string,
   password: string,
   role: userRol
+}
+
+export interface Teacher extends newTeacher {
+  id: string 
 }

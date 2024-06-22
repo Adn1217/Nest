@@ -22,14 +22,21 @@ export class SeedService {
       createdEnrollments: []
     }
 
-    // createdSeedDB.createdTeachers = this.teacherService.fillTeachersWithSEED(TEACHERS_SEED);
-    // console.log('Profesores creados: ', createdSeedDB.createdTeachers);
-    this.teacherService.fillTeachersWithSEED(TEACHERS_SEED);
-    console.log('Profesores creados: ', TEACHERS_SEED);
     try{
 
+      const createdTeachersMg = await this.teacherService.fillTeachersWithSEED(TEACHERS_SEED);
+      // console.log('Profesores creados: ', createdTeachersMg);
+      createdSeedDB.createdTeachers = createdTeachersMg;
+
+    }catch(error){
+      if(error.code === 11000){
+        throw new BadRequestException(`Se ha presentado error al intentar cargar los profesores por defecto - ${JSON.stringify(error.message)}}`);
+      }
+    }
+
+    try{
       const createdStudentsMg = await this.studentService.fillStudentsWithSEED(STUDENTS_SEED);
-      console.log('Estudiantes creados: ', createdStudentsMg);
+      // console.log('Estudiantes creados: ', createdStudentsMg);
       createdSeedDB.createdStudents = createdStudentsMg;
     }catch(error){
       if(error.code === 11000){
@@ -38,13 +45,9 @@ export class SeedService {
     }
 
     try{
-      
       const createdEnrollmentsMg = await this.enrollmentService.fillEnrollmentsWithSEED(ENROLLMENTS_SEED);
-      // const createdCoursesMg = await this.courseService.fillCoursesWithSEED(COURSES_SEED);
-      console.log('Inscripciones creadas: ', createdEnrollmentsMg);
+      // console.log('Inscripciones creadas: ', createdEnrollmentsMg);
       createdSeedDB.createdEnrollments = createdEnrollmentsMg;
-      // return createdEnrollmentsMg;
-      // return `Seed loaded on DBs`;
     }catch(error){
       if(error.code === 11000){
         throw new BadRequestException(`Se ha presentado error al intentar cargar los cursos por defecto - ${JSON.stringify(error.message)}}`);
@@ -53,10 +56,8 @@ export class SeedService {
 
     try{
       const createdCoursesMg = await this.courseService.fillCoursesWithSEED(COURSES_SEED);
-      console.log('Cursos creados: ', createdCoursesMg);
+      // console.log('Cursos creados: ', createdCoursesMg);
       createdSeedDB.createdCourses = createdCoursesMg;
-      // return createdCoursesMg;
-      // return `Seed loaded on DBs`;
     }catch(error){
       if(error.code === 11000){
         throw new BadRequestException(`Se ha presentado error al intentar cargar los cursos por defecto - ${JSON.stringify(error.message)}}`);

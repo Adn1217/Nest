@@ -56,13 +56,13 @@ export const STUDENTS_SEED : newUser [] = [
     // password: "12345678",
     // role: "user" as const,
     // },
-    {
-    nombres: "Juventino Alfonso",
-    apellidos: "Ojito Céspedes",
-    usuario: "jaloces",
-    edad: 60,
-    correo: "juveojito@hotmail.com",
-    password: "12345678",
-    role: "user" as const,
-    }
+    // {
+    // nombres: "Juventino Alfonso",
+    // apellidos: "Ojito Céspedes",
+    // usuario: "jaloces",
+    // edad: 60,
+    // correo: "juveojito@hotmail.com",
+    // password: "12345678",
+    // role: "user" as const,
+    // }
 ]

@@ -6,8 +6,17 @@ import { userRol } from "src/students/models/students.interface";
 @Schema()
 export class Teacher extends Document {
 
-    // id: string;
+    @Prop()
+    id: string;
+
+    @Prop({
+        index: true
+    })
     nombres: string;
+
+    @Prop({
+        index: true
+    })
     apellidos: string;
 
     @Prop({
@@ -16,8 +25,13 @@ export class Teacher extends Document {
     })
     usuario: string;
 
+    @Prop()
     edad:  number;
+
+    @Prop()
     nivelAcademico: string;
+
+    @Prop()
     materias: string[];
 
     @Prop({
@@ -26,7 +40,10 @@ export class Teacher extends Document {
     })
     correo: string;
 
+    @Prop()
     password: string;
+    
+    @Prop()
     role: userRol;
 }
 
