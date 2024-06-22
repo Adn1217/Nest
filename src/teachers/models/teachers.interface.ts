@@ -1,3 +1,4 @@
+import { ParseMongoIdPipe } from "src/common/pipes/parse-mongo-id.pipe"
 import { userRol } from "src/students/models/students.interface"
 
 export interface newTeacher {
@@ -13,5 +14,11 @@ export interface newTeacher {
 }
 
 export interface Teacher extends newTeacher {
-  id: string 
+  id: ParseMongoIdPipe 
+}
+
+export interface teacherQueryParams {
+  correo: string,
+  limit?: number,
+  offset?: number
 }

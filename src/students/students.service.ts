@@ -81,8 +81,8 @@ export class StudentsService {
         throw new NotFoundException(`Usuario con correo: ${email} no encontrado.`);
     }else{
       const {_id, nombres, apellidos, usuario, edad, correo, password, role } = student;
-      const studenMg = {id: _id, nombres, apellidos, usuario, edad, correo, password, role};
-      return studenMg
+      const studentMg = {id: _id, nombres, apellidos, usuario, edad, correo, password, role};
+      return studentMg
     }
   }
 

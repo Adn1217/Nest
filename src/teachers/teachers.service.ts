@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
+import { PaginationDto } from 'src/courses/dto/pagination.dto';
 
 
 enum teacherOrder {
@@ -33,34 +34,100 @@ export class TeachersService {
 
   create(createTeacherDto: CreateTeacherDto) : Teacher {
     const newTeacher = {
-      id: uuid(), 
+      id: <unknown>'66775ce5a23ea94573431b48' as ParseMongoIdPipe, 
       ...createTeacherDto,
       edad: +createTeacherDto.edad};
     this.teachers.push(newTeacher);
     return newTeacher;
   }
 
-  findAll() : Teacher [] {
-    return this.teachers;
-  }
-
-  findOne(id: string) : Teacher {
-    const teacher = this.teachers.find((teacher) => teacher.id === id);
-    if(!teacher){
-      throw new NotFoundException(`Profesor con id: ${id} no encontrado.`)
+  // findAll() : Teacher [] {
+  //   return this.teachers;
+  // }
+  
+  async findAll(paginationDto?: PaginationDto) : Promise<Teacher[]> {
+    const {limit, offset} = paginationDto;
+    try{
+      const teachersMg = await this.teacherModel.find().sort({
+        apellidos: teacherOrder[this.defaultOrder] // Ordena por atributo curso ascendente (1) o descendentemente (-1).
+      }).limit(limit).skip(offset)
+      //.select('-__v') // Elimina de la respuesta el atributo __v
+      const teachers = teachersMg.map((teacherMg) => {
+        const {_id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role} = teacherMg;
+        const teacher = {id: _id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role};
+        return teacher;
+      })
+    return teachers;
+    }catch(error){
+      this.handleExceptions(error, 'buscar');
     }
-    return teacher;
   }
 
-  update(id: string, updateTeacherDto: UpdateTeacherDto) {
-    const teacher = this.findOne(id);
-    const updatedTeacher = {...teacher, ...updateTeacherDto}
-    const index = this.teachers.findIndex((teacher) => teacher.id === id);
-    this.teachers.splice(index, 1, updatedTeacher);
-    return updatedTeacher;
+  // findOne(id: ParseMongoIdPipe) : Teacher {
+  //   const teacher = this.teachers.find((teacher) => teacher.id === id);
+  //   if(!teacher){
+  //     throw new NotFoundException(`Profesor con id: ${id} no encontrado.`)
+  //   }
+  //   return teacher;
+  // }
+  
+  async findOne(id: ParseMongoIdPipe) : Promise<Teacher> {
+    try{
+      const teacher = await this.teacherModel.findById(id);
+
+      if(!teacher){
+          throw new NotFoundException(`Profesor con id: ${id} no encontrado.`);
+      }else{
+        const {_id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role} = teacher;
+        const teacherMg = {id: _id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role};
+        return teacherMg;
+      }
+    }catch(error){
+      // console.log('Se presenta error: ', error );
+      this.handleExceptions(error, 'buscar', id);
+    }
   }
 
-  delete(id: string) {
+  async findByEmail(email: string): Promise<Teacher> {
+    const teacher = await this.teacherModel.findOne({correo: email});
+    if(!teacher){
+        throw new NotFoundException(`Usuario con correo: ${email} no encontrado.`);
+    }else{
+      const {_id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role } = teacher;
+      const teacherMg = {id: _id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role};
+      return teacherMg
+    }
+  }
+
+  // update(id: ParseMongoIdPipe, updateTeacherDto: UpdateTeacherDto) {
+  //   const teacher = this.findOne(id);
+  //   const updatedTeacher = {...teacher, ...updateTeacherDto}
+  //   const index = this.teachers.findIndex((teacher) => teacher.id === id);
+  //   this.teachers.splice(index, 1, updatedTeacher);
+  //   return updatedTeacher;
+  // }
+  
+  async update(id: ParseMongoIdPipe, updateTeacherDto: UpdateTeacherDto): Promise<Teacher> {
+    try{
+      const teacher = await this.findOne(id);
+      if(!teacher){
+          throw new NotFoundException(`Profesor con id: ${id} no encontrado.`);
+      }else{
+        const updatedTeacher = await this.teacherModel.findOneAndUpdate({_id: id}, updateTeacherDto, { new: true}) // Devuelve el estudiante actualizado.
+        if(updatedTeacher){
+          const updatedTeacher = {...teacher, ...updateTeacherDto};
+          console.log('Se ha actualizado el profesor: ', updatedTeacher);
+          return updatedTeacher;
+        }else{
+          throw new Error('Profesor no actualizado.')
+        }
+      }
+    }catch(error){
+      this.handleExceptions(error, 'editar', id);
+    }
+  }
+
+  delete(id: ParseMongoIdPipe) {
     const teacher = this.findOne(id);
     const index = this.teachers.findIndex((teacher) => teacher.id === id);
     this.teachers.splice(index, 1);
