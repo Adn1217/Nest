@@ -1,9 +1,11 @@
-import { IsEmail, IsEnum, IsNumber, IsString, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsInt, IsPositive, IsString, MinLength } from "class-validator";
 import { userRol, userRoles } from "../models/students.interface";
 
 const MINCHAR: number = 8;
 
 export class CreateStudentDto {
+
+
     @IsString({message: 'Atributos deben contener "nombres"'})
     public readonly nombres: string;
 
@@ -14,7 +16,9 @@ export class CreateStudentDto {
     public readonly usuario: string;
 
     // @IsString({message: 'Atributos deben contener "edad"'})
-    @IsNumber()
+    // @IsNumber()
+    @IsInt({message: 'La edad debe ser un entero.'})
+    @IsPositive({message: 'La edad debe ser positiva.'})
     public readonly edad: number;
 
     @IsString({message: 'Atributos deben contener "correo"'})
@@ -28,6 +32,16 @@ export class CreateStudentDto {
     @IsString({message: 'Atributos deben contener "role"'})
     @IsEnum(userRoles)
     public readonly role: userRol
+    
+    constructor(nombres: string, apellidos: string, usuario: string, edad: number, correo: string, password: string, role: string){
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.usuario = usuario;
+        this.edad = edad;
+        this.correo = correo;
+        this.password = password;
+        this.role = role as userRol;
+    }
 
     public getAttributes(){
         const studentDto = {

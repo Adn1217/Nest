@@ -1,5 +1,19 @@
-
+//Cruce con MongoDB preliminar. User local, Course MongoDB.
 export const ENROLLMENTS_SEED = [
+    // {
+    //     "id": "35e69c9a-fa82-4b16-b2b6-1410065278e1",
+    //     "courseId": "65d4cc7d804a222aa0a92302",
+    //     "userId": "666f85fea751a6fb92b7a0142"
+    // },
+    // {
+    //     "id": "0d666d18-5e6f-4ce9-a4df-3d6a1a58b909",
+    //     "courseId": "66676a6d9582f2af6b40707f",
+    //     "userId": "666f85fea751a6fb92b7a010"
+    // }
+]
+
+// Para cruce local completo.
+/* export const ENROLLMENTS_SEED = [
     {
         "id": "35e69c9a-fa82-4b16-b2b6-1410065278e1",
         "courseId": "6e480589-387d-4805-8fcc-35bebc23f5ce",
@@ -10,4 +24,17 @@ export const ENROLLMENTS_SEED = [
         "courseId": "4b2bfcfd-f4bf-4279-ae5d-73ec05f75020",
         "userId": "5997e7d5-e637-48be-9026-3ed88491d6a8"
     }
-]
+] */
+
+/* [
+    {
+        "id": "35e69c9a-fa82-4b16-b2b6-1410065278e1",
+        "course": "Ecuaciones Diferenciales",
+        "user": "Adrian Alberto Fernández Cabrera"
+    },
+    {
+        "id": "0d666d18-5e6f-4ce9-a4df-3d6a1a58b909",
+        "course": "Cálculo III",
+        "user": "Keyner Antonio Fuentes Montalvo"
+    }
+] */

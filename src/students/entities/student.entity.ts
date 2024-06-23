@@ -5,7 +5,13 @@ import { userRol } from "../models/students.interface";
 
 @Schema()
 export class Student extends Document {
+    @Prop({
+        index: true,
+    })
     nombres: string;
+    @Prop({
+        index: true,
+    })
     apellidos: string;
 
     @Prop({
@@ -14,6 +20,7 @@ export class Student extends Document {
     })
     usuario: string;
 
+    @Prop()
     edad: number;
 
     @Prop({
@@ -22,7 +29,11 @@ export class Student extends Document {
     })
     correo: string;
 
+    @Prop()
     password: string;
+    @Prop({
+        index: true,
+    })
     role: userRol
 }
 

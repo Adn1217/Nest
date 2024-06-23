@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
+import { ParseMongoIdPipe } from "src/common/pipes/parse-mongo-id.pipe";
 import { Course } from "src/courses/models/courses.model";
 import { users } from "src/students/models/students.interface";
 
@@ -10,14 +11,13 @@ export class Enrollment extends Document {
     @Prop({
         index: true,
     })
-    courseId: string;
+    courseId: ParseMongoIdPipe;
 
     @Prop({
         index: true,
     })
-    userId: string;
+    userId: ParseMongoIdPipe;
 }
-      
 
 @Schema()
 export class EnrollmentExpanded extends Enrollment {

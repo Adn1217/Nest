@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Header, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Header, Put, Query } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/createCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Course } from './models/courses.model';
+import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
+import { PaginationDto } from './dto/pagination.dto';
 // import { Response as Res } from 'express';
 
 @Controller('courses')
@@ -10,12 +12,12 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
-  create(@Body() createCourseDto: CreateCourseDto) : Course {
+  create(@Body() createCourseDto: CreateCourseDto): Promise<Course> {
     if (isNaN(+createCourseDto.creditos)){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
         error: `El atributo 'credito' debe ser un número`,
-      }, HttpStatus.BAD_REQUEST)
+      }, HttpStatus.BAD_REQUEST);
     }
     const course = this.coursesService.create(createCourseDto);
     return course;
@@ -29,19 +31,20 @@ export class CoursesController {
   
   @Get()
   @Header("Access-Control-Allow-Origin", "*") // Avoid CORS Policy.
-  findAll(): Course[] {
-    const courses = this.coursesService.findAll();
+  findAll(@Query() paginationDto: PaginationDto): Promise<Course[]> {
+    // console.log('Pagination Queries: ', paginationDto);
+    const courses = this.coursesService.findAll(paginationDto);
     return courses;
   } 
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string) : Course {
+  findOne(@Param('id') id: ParseMongoIdPipe) : Promise<Course> {
     const course = this.coursesService.findOne(id);
     return course;
   }
 
   @Put(':id')
-  update(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string, @Body() updateCourseDto: UpdateCourseDto) : Course {
+  update(@Param('id') id: ParseMongoIdPipe, @Body() updateCourseDto: UpdateCourseDto) : Promise<Course> {
     if (Object.keys(updateCourseDto).length === 0){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -59,7 +62,7 @@ export class CoursesController {
   }
 
   @Delete(':id')
-  delete(@Param('id', new ParseUUIDPipe({ version: '4'})) id: string): Course {
+  delete(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe): Promise<Course> {
     return this.coursesService.delete(id);
   }
 }

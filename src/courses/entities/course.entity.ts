@@ -10,7 +10,10 @@ export class Course extends Document {
         index: true,
     })
     curso: string;
-
+    @Prop({
+        unique: false,
+        index: false,
+    })
     creditos: number;
 }
 
