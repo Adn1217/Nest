@@ -106,8 +106,8 @@ export class StudentsService {
     try {
       const newStudentMongo = await this.studentModel.create(createStudentDto);
       const {_id, nombres, apellidos, usuario, edad, correo, password, role } = newStudentMongo;
-      const newEnrollmentMg= {id: _id.toString(), nombres, apellidos, usuario, edad, correo, password, role}
-      return newEnrollmentMg;
+      const newStudentMg= {id: _id.toString(), nombres, apellidos, usuario, edad, correo, password, role}
+      return newStudentMg;
     }catch(error){
       // console.log('Se presenta error: ', error);
       this.handleExceptions(error, 'guardar');
@@ -154,7 +154,7 @@ export class StudentsService {
   //   return savedStudent
   // }
   
-  async delete(id: ParseMongoIdPipe): Promise<any> {
+  async delete(id: ParseMongoIdPipe): Promise<users> {
     try{
       // const course = await this.findOne(id);
       const deletedStudentMg = await this.studentModel.findByIdAndDelete(id);

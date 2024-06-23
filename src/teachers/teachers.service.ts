@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { CreateTeacherDto } from './dto/createTeacher.dto';
 import { UpdateTeacherDto } from './dto/updateTeacher.dto';
 import { Teacher as TeacherEntity } from './entities/teacher.entity';
-import { v4 as uuid } from 'uuid';
 import { Teacher, newTeacher } from './models/teachers.interface'
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -32,14 +31,27 @@ export class TeachersService {
     this.defaultOrder = configService.get<string>('TEACHER_ORDER');
   }
 
-  create(createTeacherDto: CreateTeacherDto) : Teacher {
-    const newTeacher = {
-      id: <unknown>'66775ce5a23ea94573431b48' as ParseMongoIdPipe, 
-      ...createTeacherDto,
-      edad: +createTeacherDto.edad};
-    this.teachers.push(newTeacher);
-    return newTeacher;
+  // create(createTeacherDto: CreateTeacherDto) : Teacher {
+  //   const newTeacher = {
+  //     id: <unknown>'66775ce5a23ea94573431b48' as ParseMongoIdPipe, 
+  //     ...createTeacherDto,
+  //     edad: +createTeacherDto.edad};
+  //   this.teachers.push(newTeacher);
+  //   return newTeacher;
+  // }
+  
+  async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
+    try {
+      const newTeacherMongo = await this.teacherModel.create(createTeacherDto);
+      const {_id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role } = newTeacherMongo;
+      const newTeacherMg= {id: _id.toString(), nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role}
+      return newTeacherMg;
+    }catch(error){
+      // console.log('Se presenta error: ', error);
+      this.handleExceptions(error, 'guardar');
+    }
   }
+
 
   // findAll() : Teacher [] {
   //   return this.teachers;
@@ -91,7 +103,7 @@ export class TeachersService {
   async findByEmail(email: string): Promise<Teacher> {
     const teacher = await this.teacherModel.findOne({correo: email});
     if(!teacher){
-        throw new NotFoundException(`Usuario con correo: ${email} no encontrado.`);
+        throw new NotFoundException(`Profesor con correo: ${email} no encontrado.`);
     }else{
       const {_id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role } = teacher;
       const teacherMg = {id: _id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role};
@@ -127,11 +139,28 @@ export class TeachersService {
     }
   }
 
-  delete(id: ParseMongoIdPipe) {
-    const teacher = this.findOne(id);
-    const index = this.teachers.findIndex((teacher) => teacher.id === id);
-    this.teachers.splice(index, 1);
-    return teacher;
+  // delete(id: ParseMongoIdPipe) {
+  //   const teacher = this.findOne(id);
+  //   const index = this.teachers.findIndex((teacher) => teacher.id === id);
+  //   this.teachers.splice(index, 1);
+  //   return teacher;
+  // }
+  
+  async delete(id: ParseMongoIdPipe): Promise<Teacher> {
+    try{
+      // const course = await this.findOne(id);
+      const deletedStudentMg = await this.teacherModel.findByIdAndDelete(id);
+      // console.log("deletionResp: ", deletedStudentMg);
+      if(!deletedStudentMg){
+          throw new NotFoundException(`Profesor con id: ${id} no encontrado.`);
+      }else{
+        const {_id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role} = deletedStudentMg;
+        const deletedStudent = {id: _id, nombres, apellidos, usuario, edad, nivelAcademico, materias, correo, password, role};
+        return deletedStudent;
+      }
+    }catch(error){
+      this.handleExceptions(error, 'eliminar', id);
+    }
   }
 
   // fillTeachersWithSEED( TEACHERS_SEED: Teacher[]){

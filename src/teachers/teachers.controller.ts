@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, HttpException, HttpStatus, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Put, Query } from '@nestjs/common';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/createTeacher.dto';
 import { UpdateTeacherDto } from './dto/updateTeacher.dto';
@@ -11,7 +11,7 @@ export class TeachersController {
   constructor(private readonly teachersService: TeachersService) {}
 
   @Post()
-  create(@Body() createTeacherDto: CreateTeacherDto) {
+  create(@Body() createTeacherDto: CreateTeacherDto): Promise<Teacher> {
     if (isNaN(+createTeacherDto.edad)){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -42,13 +42,13 @@ export class TeachersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe) {
+  findOne(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe): Promise<Teacher> {
     const course = this.teachersService.findOne(id);
     return course;
   }
 
   @Put(':id')
-  update(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe, @Body() updateTeacherDto: UpdateTeacherDto) {
+  update(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe, @Body() updateTeacherDto: UpdateTeacherDto): Promise<Teacher> {
     if (Object.keys(updateTeacherDto).length === 0){
       throw new HttpException({
         status: HttpStatus.BAD_REQUEST,
@@ -60,7 +60,7 @@ export class TeachersController {
   }
 
   @Delete(':id')
-  delete(@Param('id', new ParseUUIDPipe({version: '4'})) id: ParseMongoIdPipe) {
+  delete(@Param('id', ParseMongoIdPipe) id: ParseMongoIdPipe) : Promise<Teacher> {
     const deletedTeacher = this.teachersService.delete(id);
     return deletedTeacher;
   }
